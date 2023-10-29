@@ -1,0 +1,17 @@
+{
+  "name": "avn-training-rebuild",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests yet...\""
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0",
+    "express": "^4.18.2",
+    "http-status-codes": "^2.3.0",
+    "mongodb": "^6.2.0",
+    "uuid": "^9.0.1"
+  },
+  "main": "src/functions/*.js"
+}
