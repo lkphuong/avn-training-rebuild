@@ -1,6 +1,6 @@
-# Project Title: Avn Training Rebuild
+# Avn Training Rebuild
 
-## Project Description
+## Description
 This project using Azure Functions and Cosmos DB to create a serverless API for managing data.
 
 ## Prerequisites

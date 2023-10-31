@@ -8,8 +8,8 @@ const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config/db");
 
 const client = new MongoClient(CONNECTION_STRING);
 
-app.http("get-all-account", {
-  methods: ["GET", "POST"],
+app.http("api_0001_get-all-account", {
+  methods: ["GET"],
   authLevel: "anonymous",
   route: "accounts",
   handler: async (request, context) => {
@@ -18,7 +18,9 @@ app.http("get-all-account", {
     await client.connect();
     const database = client.db(DB_NAME);
     const collection = database.collection(COLLECTION.ACCOUNT);
-    const data = await collection.find({}).toArray();
+    const data = await collection
+      .find({}, { projection: { password: 0 } })
+      .toArray();
 
     if (data?.length) {
       return (context.res = {

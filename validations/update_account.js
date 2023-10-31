@@ -1,33 +1,20 @@
-const validateCreateAccountDto = (data) => {
+function validateUpdateAccount(data) {
   const errors = [];
-  if (!data.username || typeof data.username !== "string") {
-    errors.push("Tên đăng nhập không được để trống");
+
+  if (data.name && typeof data.name !== "string") {
+    errors.push("Tên phải là chuỗi");
   }
 
-  if (!data.password || typeof data.password !== "string") {
-    errors.push("Mật khẩu không được để trống");
-  } else if (data.password.length < 6) {
-    errors.push("Mật khẩu phải có ít nhất 6 kí tự");
-  }
-
-  if (!data.name || typeof data.name !== "string") {
-    errors.push("Tên không được để trống");
-  }
-
-  if (!(data.birthday instanceof Date)) {
+  if (data.birthday && !(data.birthday instanceof Date)) {
     errors.push("Ngày sinh phải là ngày");
   }
 
-  if (typeof data.gender !== "boolean") {
+  if (data.gender && typeof data.gender !== "boolean") {
     errors.push("Giới tính phải là boolean");
   }
 
-  if (
-    !data.email ||
-    typeof data.email !== "string" ||
-    !/\S+@\S+\.\S+/.test(data.email)
-  ) {
-    errors.push("Email không đúng định dạng");
+  if (data.email && typeof data.email !== "string") {
+    errors.push("Email phải là chuỗi");
   }
 
   if (
@@ -35,10 +22,6 @@ const validateCreateAccountDto = (data) => {
     (typeof data.phoneNumber !== "string" || data.phoneNumber.length > 15)
   ) {
     errors.push("Số điện thoại tối đa 15 kí tự");
-  }
-
-  if (typeof data.isAdmin !== "boolean") {
-    errors.push("Loại tài khoản phải là boolean");
   }
 
   if (data.dateOutOfWork && !(data.dateOutOfWork instanceof Date)) {
@@ -66,6 +49,6 @@ const validateCreateAccountDto = (data) => {
   }
 
   return errors;
-};
+}
 
-module.exports = { validateCreateAccountDto };
+module.exports = { validateUpdateAccount };
