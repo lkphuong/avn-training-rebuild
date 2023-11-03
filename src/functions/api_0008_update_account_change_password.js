@@ -1,8 +1,6 @@
 const { app } = require("@azure/functions");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
-const { compareSync, hashSync } = require("bcrypt");
-
 const { success } = require("../../utils");
 
 const {
@@ -20,12 +18,15 @@ app.http("api_0008_update_account_change_password", {
   route: "accounts/change-password",
   handler: async (request, context) => {
     context.log(`Http function processed request for url "${request.url}"`);
-    const data = request.body;
+    const data = await request.json();
     const validationErrors = validateChangePassword(data);
     if (validationErrors.length > 0) {
       return (context.res = {
         status: StatusCodes.BAD_REQUEST,
-        body: success(null, null, JSON.stringify(validationErrors)),
+        body: success(null, validationErrors[0], validationErrors),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
     }
 
@@ -50,21 +51,27 @@ app.http("api_0008_update_account_change_password", {
       });
     }
 
-    const isMatch = compareSync(data.password, account.password);
+    // const isMatch = await bcrypt.compare(data.oldPassword, account.password);
 
-    if (!isMatch) {
-      return (context.res = {
-        status: StatusCodes.BAD_REQUEST,
-        body: success(null, "Username hoặc mật khẩu không chính xác"),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    }
+    // if (!isMatch) {
+    //   return (context.res = {
+    //     status: StatusCodes.BAD_REQUEST,
+    //     body: success(null, "Username hoặc mật khẩu không chính xác"),
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   });
+    // }
 
-    const userGroup = await userGroupCollection.findOne({ userId: account.id });
+    const userGroup = await userGroupCollection.findOne({
+      userId: new ObjectId(account._id),
+    });
 
-    const group = await groupCollection.findOne({ id: userGroup.groupId });
+    const group = userGroup
+      ? await groupCollection.findOne({
+          _id: new ObjectId(userGroup.groupId),
+        })
+      : null;
 
     const _account = { ...account, role: group?.name };
 
@@ -78,16 +85,22 @@ app.http("api_0008_update_account_change_password", {
       });
     }
 
-    const newPassword = hashSync(data.newPassword, BCRYPT_SALT);
+    // const newPassword = await bcrypt.hash(data.newPassword, BCRYPT_SALT);
     const result = await collection.findOneAndUpdate(
-      { id: account.id },
+      { _id: new ObjectId(account._id) },
       {
-        password: newPassword,
+        $set: {
+          password: newPassword,
+        },
       }
     );
+    console.log("result: ", result);
     return (context.res = {
       status: StatusCodes.OK,
-      body: success(result ? true : false),
+      body: success(true ? true : false, null),
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
   },
 });

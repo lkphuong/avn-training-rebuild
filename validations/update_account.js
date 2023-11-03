@@ -5,7 +5,7 @@ function validateUpdateAccount(data) {
     errors.push("Tên phải là chuỗi");
   }
 
-  if (data.birthday && !(data.birthday instanceof Date)) {
+  if (data.birthday && !(new Date(data.birthday) instanceof Date)) {
     errors.push("Ngày sinh phải là ngày");
   }
 

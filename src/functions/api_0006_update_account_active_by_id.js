@@ -26,7 +26,7 @@ app.http("api_0006_update_account_active_by_id", {
     if (validationErrors.length > 0) {
       return (context.res = {
         status: StatusCodes.BAD_REQUEST,
-        body: success(null, JSON.stringify(validationErrors)),
+        body: success(null, validationErrors[0], validationErrors),
       });
     }
 
