@@ -4,7 +4,7 @@ const { StatusCodes } = require("http-status-codes");
 const { success } = require("../../utils");
 const { ERROR_MESSAGE } = require("../../constant/error_message");
 
-const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config/db");
+const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 
 const client = new MongoClient(CONNECTION_STRING);
 

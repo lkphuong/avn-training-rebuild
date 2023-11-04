@@ -7,7 +7,7 @@ const {
   validateUpdateActiveAccount,
 } = require("../../validations/update_active_account");
 
-const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config/db");
+const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { ERROR_MESSAGE } = require("../../constant/error_message");
 
 const client = new MongoClient(CONNECTION_STRING);

@@ -5,7 +5,7 @@ const { success } = require("../../utils");
 
 const { validateCreateAccount } = require("../../validations/add_account");
 
-const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config/db");
+const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { ACCOUNT_TYPE } = require("../../constant/account_type");
 const { HEADERS } = require("../../constant/header");
 

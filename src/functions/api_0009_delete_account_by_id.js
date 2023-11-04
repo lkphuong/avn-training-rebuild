@@ -4,8 +4,9 @@ const { StatusCodes } = require("http-status-codes");
 
 const { success, getDateNowFormat, getDateNow } = require("../../utils");
 
-const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config/db");
+const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { ERROR_MESSAGE } = require("../../constant/error_message");
+const { HEADERS } = require("../../constant/header");
 
 const client = new MongoClient(CONNECTION_STRING);
 
@@ -30,9 +31,7 @@ app.http("api_0009_delete_account_by_id", {
       return (context.res = {
         status: StatusCodes.NOT_FOUND,
         body: success(null, ERROR_MESSAGE.GET_ACCOUNT_BY_ID_NOT_FOUND),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: HEADERS,
       });
     }
 
@@ -52,9 +51,7 @@ app.http("api_0009_delete_account_by_id", {
     return (context.res = {
       status: StatusCodes.OK,
       body: success({ username: result.username }, null, null),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: HEADERS,
     });
   },
 });

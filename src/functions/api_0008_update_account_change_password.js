@@ -7,7 +7,7 @@ const {
   validateChangePassword,
 } = require("../../validations/change_password_account");
 
-const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config/db");
+const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { BCRYPT_SALT } = require("../../constant/setting");
 
 const client = new MongoClient(CONNECTION_STRING);
