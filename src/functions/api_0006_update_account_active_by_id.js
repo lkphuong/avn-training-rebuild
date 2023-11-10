@@ -9,6 +9,7 @@ const {
 
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { ERROR_MESSAGE } = require("../../constant/error_message");
+const { HEADERS } = require("../../constant/header");
 
 const client = new MongoClient(CONNECTION_STRING);
 
@@ -40,9 +41,7 @@ app.http("api_0006_update_account_active_by_id", {
       return (context.res = {
         status: StatusCodes.NOT_FOUND,
         body: success(null, ERROR_MESSAGE.GET_ACCOUNT_BY_ID_NOT_FOUND),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: HEADERS,
       });
     }
 

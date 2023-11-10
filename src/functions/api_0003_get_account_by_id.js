@@ -6,6 +6,7 @@ const { success } = require("../../utils");
 
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { ERROR_MESSAGE } = require("../../constant/error_message");
+const { HEADERS } = require("../../constant/header");
 
 const client = new MongoClient(CONNECTION_STRING);
 
@@ -25,21 +26,21 @@ app.http("api_0003_get_account_by_id", {
     const groupCollection = database.collection(COLLECTION.GROUP);
 
     const account = await collection.findOne({ _id: new ObjectId(id) });
-
+    console.log("account: ", account);
     if (account) {
       const userGroup = await userGroupCollection.findOne({
         userId: new ObjectId(account._id),
       });
-
+      console.log("userGroup: ", userGroup);
       let group = null;
       if (userGroup) {
         group = await groupCollection.findOne({
           _id: new ObjectId(userGroup.groupId),
         });
       }
-
+      console.log("group: ", group);
       const response = {
-        id: account.id,
+        id: account._id,
         username: account?.username,
         group: group?.name,
         name: account?.name,
@@ -49,17 +50,13 @@ app.http("api_0003_get_account_by_id", {
       return (context.res = {
         status: StatusCodes.OK,
         body: success(response, null),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: HEADERS,
       });
     }
     return (context.res = {
       status: StatusCodes.NOT_FOUND,
       body: success(data, ERROR_MESSAGE.GET_ACCOUNT_BY_ID_NOT_FOUND),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: HEADERS,
     });
   },
 });

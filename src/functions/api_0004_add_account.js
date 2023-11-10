@@ -36,7 +36,6 @@ app.http("api_0004_add-account", {
     const userCollection = database.collection(COLLECTION.USERS);
     const userGroupCollection = database.collection(COLLECTION.USER_GROUP);
     let user = null;
-    let userGroup = null;
 
     const groups = await groupCollection.find({}).toArray();
     const accountId = new ObjectId();
@@ -56,13 +55,14 @@ app.http("api_0004_add-account", {
 
       const groupUser = groups.find((g) => g.name == ACCOUNT_TYPE.USER);
 
-      const [user, userGroup] = await Promise.all([
+      [user, userGroup] = await Promise.all([
         await userCollection.insertOne({ ...userParam }),
         await userGroupCollection.insertOne({
           groupId: groupUser.id,
           userId: accountId,
         }),
       ]);
+      console.log("user: ", user);
     } else {
       const groupAdmin = groups.find((g) => g.name == ACCOUNT_TYPE.ADMIN);
 
@@ -73,8 +73,9 @@ app.http("api_0004_add-account", {
     }
 
     const account = await collection.insertOne({
-      id: accountId,
-      userId: user?.id,
+      _id: accountId,
+      userId: user?.insertedId,
+      ...data,
     });
 
     return (context.res = {
