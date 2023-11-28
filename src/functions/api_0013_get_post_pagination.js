@@ -59,6 +59,7 @@ app.http("api_0013_get_post_pagination", {
       .find(searchObj)
       .skip(parseInt(offset))
       .limit(parseInt(limit))
+      .sort(sort)
       .toArray();
 
     let files = [],

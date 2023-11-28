@@ -1,5 +1,6 @@
 const dayjs = require("dayjs");
 const { CryptoProvider } = require("@azure/msal-node");
+const { JWT_KEY } = require("../config");
 
 const provider = new CryptoProvider();
 
@@ -22,14 +23,24 @@ const getDateNowFormat = (format) => {
 
 const getDateNow = () => new Date(Date.now());
 
-const decode = (state) => {
-  let str = provider.base64Decode(state);
+const decodeJWT = async (token) => {
   try {
-    return JSON.parse(str);
+    const decode = await jwt.verify(token, JWT_KEY);
+
+    return {
+      username: decode.username,
+      role: decode?.role ?? "user",
+      lang: decode?.lang ?? ["vi"],
+    };
   } catch (e) {
-    str = str.substring(0, str.length - 1);
-    return JSON.parse(str);
+    return null;
   }
 };
 
-module.exports = { success, getDateNowFormat, getDateNow, decode };
+const getLanguage = (role) => {
+  if (role == "user") return ["vi"];
+
+  return ["vi", "en"];
+};
+
+module.exports = { success, getDateNowFormat, getDateNow, decodeJWT };

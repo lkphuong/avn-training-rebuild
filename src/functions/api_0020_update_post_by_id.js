@@ -12,17 +12,23 @@ const { DEFAULT_MAX_ITEM_PER_PAGE } = require("../../constant/setting");
 const { CONNECTION_STRING, COLLECTION, DB_NAME } = require("../../config");
 const { HEADERS } = require("../../constant/header");
 const { SOURCE_LINK } = require("../../constant/exam_type");
+const { default: slugify } = require("slugify");
 
 const client = new MongoClient(CONNECTION_STRING);
 
-app.http("api_0017_create_post", {
-  methods: ["POST"],
+app.http("api_0020_update_by_id", {
+  methods: ["PUT"],
   authLevel: "anonymous",
-  route: "posts/create",
+  route: "update/updateById/{id}",
   handler: async (request, context) => {
     context.log(`Http function processed request for url "${request.url}"`);
 
     const data = await request.json();
+    const id = request.params.id;
+    const token = req.headers.authorization;
+    const decode = await decodeJWT(token);
+    if (!decode) {
+    }
 
     const validationErrors = validateCreatePost(data);
 
@@ -34,50 +40,49 @@ app.http("api_0017_create_post", {
       });
     }
 
-    let sourceId, sourceType;
-    let existExam = false;
-
     await client.connect();
     const database = client.db(DB_NAME);
     const collection = database.collection(COLLECTION.POST);
     const examCollection = database.collection(COLLECTION.EXAM);
 
-    const _id = new ObjectId();
-
-    if (data.testType === SOURCE_LINK.POST_CATEGORY) {
-      sourceId = data.categoryId;
-      sourceType = SOURCE_LINK.POST_CATEGORY;
-
-      const exam = await examCollection.findOne({
-        sourceId: new ObjectId(data.categoryId),
-      });
-
-      if (exam) {
-        existExam = true;
-      } else {
-        sourceId = _id;
-        sourceType = SOURCE_LINK.POST;
-      }
-
-      if (!existExam) {
-        await examCollection.insertOne({
-          _id,
-          url: data.linkTest,
-          sourceId,
-          sourceType,
-        });
-      }
-
-      await collection.insertOne({
-        _id,
-        ...data,
-      });
-
+    const post = await collection.findOne({ _id: new ObjectId(id) });
+    if (!post) {
       return (context.res = {
-        status: StatusCodes.OK,
-        body: success({ _id }, null),
+        status: StatusCodes.NOT_FOUND,
+        body: success(null, "Không tìm thấy bài viết"),
         headers: HEADERS,
       });
+    }
+
+    if (post.title !== data.title) {
+      const slug = slugify(data.title, { locale: "vi", lower: true });
+
+      const existPost = collection.findOne({ slug });
+
+      if (existPost) {
+        return (context.res = {
+          status: StatusCodes.NOT_FOUND,
+          body: success(null, "Duplicated field"),
+          headers: HEADERS,
+        });
+      }
+    }
+
+    let examResult;
+    examResult = await examCollection.findOne({
+      sourceId: new ObjectId(post._id),
+      sourceType: SOURCE_LINK.POST,
+    });
+
+    if (!examResult) {
+      examResult = await examCollection.findOne({
+        sourceId: post.categoryId,
+        sourceType: SOURCE_LINK.POST_CATEGORY,
+      });
+    }
+
+    if (examResult) {
+      await examCollection.findOneAndUpdate({ _id });
     }
   },
 });

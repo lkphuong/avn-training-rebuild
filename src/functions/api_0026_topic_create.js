@@ -1,23 +1,26 @@
 const { app } = require("@azure/functions");
+const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 
 const { success } = require("../../utils");
 
-const { validateRedirectUri } = require("../../validations/auzre_redirect_uri");
-
+const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
+const { ERROR_MESSAGE } = require("../../constant/error_message");
 const { HEADERS } = require("../../constant/header");
-const { AZURE_CONFIG } = require("../../config");
+const { validateCreateTopic } = require("../../validations/create_topic");
 
-app.http("api_0011_redirect_azure", {
+const client = new MongoClient(CONNECTION_STRING);
+
+app.http("api_0026_topic_create", {
   methods: ["POST"],
   authLevel: "anonymous",
-  route: "auth/azure/redirect",
+  route: "topics/create",
   handler: async (request, context) => {
     context.log(`Http function processed request for url "${request.url}"`);
-    const data = await request.json();
-    const redirectUri = data.redirectUri;
-    const validationErrors = validateRedirectUri(data);
 
+    const data = await request.json();
+
+    const validationErrors = validateCreateTopic(data);
     if (validationErrors.length > 0) {
       return (context.res = {
         status: StatusCodes.BAD_REQUEST,
@@ -26,17 +29,20 @@ app.http("api_0011_redirect_azure", {
       });
     }
 
-    const url = `https://login.microsoftonline.com/${
-      AZURE_CONFIG.AZURE_TENANT_ID
-    }/oauth2/v2.0/authorize?client_id=${
-      AZURE_CONFIG.AZURE_CLIENT_ID
-    }&response_type=code&redirect_uri=${
-      redirectUri ?? AZURE_CONFIG.AZURE_REDIRECT_URI
-    }&response_mode=query&scope=openid%20offline_access%20https%3A%2F%2Fgraph.microsoft.com%2Fuser.read`;
+    await client.connect();
+    const database = client.db(DB_NAME);
+    const collection = database.collection(COLLECTION.TOPIC);
+
+    const _id = new ObjectId();
+
+    await collection.insertOne({
+      _id,
+      ...data,
+    });
 
     return (context.res = {
       status: StatusCodes.OK,
-      body: success({ url }, null),
+      body: success({ _id }, null),
       headers: HEADERS,
     });
   },

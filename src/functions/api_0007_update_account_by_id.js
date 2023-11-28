@@ -67,7 +67,7 @@ app.http("api_0007_update_account_by_id", {
       );
     }
 
-    const result = await collection.findOneAndUpdate(
+    await collection.findOneAndUpdate(
       { _id: new ObjectId(id) },
       {
         $set: { ...data },
