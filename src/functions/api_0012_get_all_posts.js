@@ -19,7 +19,6 @@ app.http("api_0012_get_all_posts", {
     const database = client.db(DB_NAME);
     const collection = database.collection(COLLECTION.POST);
     const data = await collection.find({ deleted: false }).toArray();
-
     if (data?.length) {
       return (context.res = {
         status: StatusCodes.OK,

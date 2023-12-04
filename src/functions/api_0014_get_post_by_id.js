@@ -29,7 +29,6 @@ app.http("api_0014_get_post_by_id", {
     const post = await collection.findOne({ _id: new ObjectId(id) });
 
     if (post) {
-      console.log("post: ", post);
       const banner = await fileCollection.findOne({
         _id: new ObjectId(post.banner),
       });
@@ -92,8 +91,8 @@ app.http("api_0014_get_post_by_id", {
       };
 
       return (context.res = {
-        status: StatusCodes.NOT_FOUND,
-        body: success(postFormated, ERROR_MESSAGE.NO_CONTENT),
+        status: StatusCodes.OK,
+        body: success(postFormated, null),
         headers: HEADERS,
       });
     }

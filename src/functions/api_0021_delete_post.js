@@ -2,50 +2,76 @@ const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 
-const { success } = require("../../utils");
-
-const { validateUpdateAccount } = require("../../validations/update_account");
+const { success, decodeJWT } = require("../../utils");
 
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
-const { ERROR_MESSAGE } = require("../../constant/error_message");
+const { HEADERS } = require("../../constant/header");
 
 const client = new MongoClient(CONNECTION_STRING);
 
 app.http("api_0021_update_post", {
-  methods: ["DELET"],
+  methods: ["DELETE"],
   authLevel: "anonymous",
-  route: "delete/deleteById/:id",
+  route: "posts/delete/deleteById/{id}",
   handler: async (request, context) => {
-    context.log(`Http function processed request for url "${request.url}"`);
+    try {
+      context.log(`Http function processed request for url "${request.url}"`);
 
-    const id = request.params.id;
+      const id = request.params.id;
 
-    await client.connect();
-    const database = client.db(DB_NAME);
-    const collection = database.collection(COLLECTION.POST);
+      const token = request.headers.get("authorization");
+      // const decode = await decodeJWT(token);
+      // if (!decode) {
+      //   return (context.res = {
+      //     status: StatusCodes.BAD_REQUEST,
+      //     body: success(null, "Vui lòng đăng nhập trước khi gọi request."),
+      //     headers: HEADERS,
+      //   });
+      // }
 
-    let post = await collection.findOne({ _id: new ObjectId(id) });
+      await client.connect();
+      const database = client.db(DB_NAME);
+      const collection = database.collection(COLLECTION.POST);
 
-    if (!post) {
+      let post = await collection.findOne({
+        _id: new ObjectId(id),
+        deleted: false,
+      });
+
+      if (!post) {
+        return (context.res = {
+          status: StatusCodes.NOT_FOUND,
+          body: success(null, "Bài viết không tồn tại."),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      }
+
+      const result = await collection.findOneAndUpdate(
+        { _id: new ObjectId(id), deleted: false },
+        {
+          $set: {
+            deleted: true,
+            slug: post.slug + "-" + Date.now(),
+          },
+        }
+      );
+
+      console.log("result: ", result);
+
       return (context.res = {
-        status: StatusCodes.NOT_FOUND,
-        body: success(null, "Bài viết không tồn tại."),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        status: StatusCodes.OK,
+        body: success({ _id: id }, null),
+        headers: HEADERS,
+      });
+    } catch (e) {
+      console.log("err: ", e);
+      return (context.res = {
+        status: StatusCodes.BAD_REQUEST,
+        body: success(null, "Đã có lỗi xảy ra vui lòng thử lại."),
+        headers: HEADERS,
       });
     }
-
-    const result = await collection.findOneAndUpdate(
-      { _id: new ObjectId(id), deleted: false },
-      {
-        $set: {
-          deleted: true,
-          slug: post.slug + "-" + Date.now(),
-        },
-      }
-    );
-
-    return result;
   },
 });

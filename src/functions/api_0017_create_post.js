@@ -3,15 +3,11 @@ const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 const { success } = require("../../utils");
 
-const { ERROR_MESSAGE } = require("../../constant/error_message");
-
-const { SORT_BY } = require("../../constant/sort_by");
-const { SORT_TYPE } = require("../../constant/sort_type");
 const { validateCreatePost } = require("../../validations/create_post");
-const { DEFAULT_MAX_ITEM_PER_PAGE } = require("../../constant/setting");
 const { CONNECTION_STRING, COLLECTION, DB_NAME } = require("../../config");
 const { HEADERS } = require("../../constant/header");
 const { SOURCE_LINK } = require("../../constant/exam_type");
+const { default: slugify } = require("slugify");
 
 const client = new MongoClient(CONNECTION_STRING);
 
@@ -54,30 +50,34 @@ app.http("api_0017_create_post", {
 
       if (exam) {
         existExam = true;
-      } else {
-        sourceId = _id;
-        sourceType = SOURCE_LINK.POST;
       }
+    } else {
+      sourceId = _id;
+      sourceType = SOURCE_LINK.POST;
+    }
 
-      if (!existExam) {
-        await examCollection.insertOne({
-          _id,
-          url: data.linkTest,
-          sourceId,
-          sourceType,
-        });
-      }
-
-      await collection.insertOne({
+    if (!existExam) {
+      await examCollection.insertOne({
         _id,
-        ...data,
-      });
-
-      return (context.res = {
-        status: StatusCodes.OK,
-        body: success({ _id }, null),
-        headers: HEADERS,
+        url: data.linkTest,
+        sourceId,
+        sourceType,
+        deleted: false,
       });
     }
+
+    await collection.insertOne({
+      _id,
+      slug:
+        slugify(data.title, { locale: "vi", lower: true }) + "-" + Date.now(),
+      deleted: false,
+      ...data,
+    });
+
+    return (context.res = {
+      status: StatusCodes.OK,
+      body: success({ _id }, null),
+      headers: HEADERS,
+    });
   },
 });

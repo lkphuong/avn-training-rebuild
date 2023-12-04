@@ -148,7 +148,11 @@ app.http("api_0010_login_with_azure", {
 
       // gen jwt token
       const accessToken = jwt.sign(
-        { username: newInfo[1].username, lang: ["vi"] },
+        {
+          username: account.username,
+          lang: group?.name == "admin" ? ["vi", "en"] : ["vi"],
+          role: group?.name == "admin" ? "admin" : "user",
+        },
         JWT_KEY,
         {
           expiresIn: 60 * 60 * 24,

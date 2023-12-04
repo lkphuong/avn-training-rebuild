@@ -9,11 +9,11 @@ const validateCreatePost = (data) => {
     errors.push("Tiêu đề không được bỏ trống và phải là chuỗi");
   }
 
-  if (!data.banner || !(data.banner instanceof ObjectId)) {
+  if (!data.banner) {
     errors.push("Banner không được để trống và phải là object id");
   }
 
-  if (!data.categoryId || !(data.categoryId instanceof ObjectId)) {
+  if (!data.categoryId) {
     errors.push("ID loại chủ đề không được để trống và phải là object id");
   }
 
@@ -29,11 +29,11 @@ const validateCreatePost = (data) => {
     errors.push("Youtube id phải là chuỗi");
   }
 
-  if (!data.type || !Object.values(POST_TYPE).includes(data.type)) {
-    errors.push(
-      "Loại post không được để trống và phải là hình ảnh và chữ hoặc video"
-    );
-  }
+  // if (!data.type || !Object.values(POST_TYPE).includes(data.type)) {
+  //   errors.push(
+  //     "Loại post không được để trống và phải là hình ảnh và chữ hoặc video"
+  //   );
+  // }
 
   if (!data.duration || typeof data.duration !== "number") {
     errors.push("Thời gian xem bài post không được để trống và phải là số");
@@ -51,13 +51,13 @@ const validateCreatePost = (data) => {
     errors.push("Tình trạng hiển thị phải là boolean");
   }
 
-  if (!data.linkTest || typeof data.linkTest !== "string") {
-    errors.push("Link test không được để trống và phải là chuỗi");
-  }
+  // if (!data.linkTest || typeof data.linkTest !== "string") {
+  //   errors.push("Link test không được để trống và phải là chuỗi");
+  // }
 
-  if (!data.testType || !Object.values(SOURCE_LINK).includes(data.testType)) {
-    errors.push("Link test không được để trống và phải là chuỗi");
-  }
+  // if (!data.testType || !Object.values(SOURCE_LINK).includes(data.testType)) {
+  //   errors.push("Link test không được để trống và phải là chuỗi");
+  // }
 
   if (data.lang && typeof data.lang !== "string") {
     errors.push("Ngôn ngữ phải là chuỗi");
