@@ -1,10 +1,8 @@
-const { ObjectId } = require("mongodb");
-
 const validateCreateTopic = (data) => {
   const errors = [];
 
-  if (!data.banner || !(data.banner instanceof ObjectId)) {
-    errors.push("Banner không được để trống và phải là object id");
+  if (!data.banner) {
+    errors.push("Banner không được để trống");
   }
 
   if (!data.name || typeof data.name !== "string") {
@@ -23,11 +21,11 @@ const validateCreateTopic = (data) => {
     errors.push("Sort order phải là số.");
   }
 
-  if (!data.isPin || typeof data.isPin !== "boolean") {
+  if (typeof data.isPin !== "boolean") {
     errors.push("Is pin phải là boolean.");
   }
 
-  if (!data.active || typeof data.active !== "boolean") {
+  if (typeof data.active !== "boolean") {
     errors.push("Active phải là boolean.");
   }
 

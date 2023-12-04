@@ -103,8 +103,10 @@ app.http("api_0010_login_with_azure", {
       const accessToken = jwt.sign(
         {
           username: account.username,
+          name: account.name,
+          avatar: account?.avatar ?? "",
           lang: group?.name == "admin" ? ["vi", "en"] : ["vi"],
-          role: group?.name == "admin" ? "admin" : "user",
+          group: group?.name == "admin" ? "admin" : "user",
         },
         JWT_KEY,
         {
@@ -150,8 +152,10 @@ app.http("api_0010_login_with_azure", {
       const accessToken = jwt.sign(
         {
           username: account.username,
+          name: account.name,
+          avatar: account?.avatar ?? "",
           lang: group?.name == "admin" ? ["vi", "en"] : ["vi"],
-          role: group?.name == "admin" ? "admin" : "user",
+          group: group?.name == "admin" ? "admin" : "user",
         },
         JWT_KEY,
         {

@@ -30,7 +30,9 @@ const decodeJWT = async (data) => {
     console.log("decode: ", decode);
     return {
       username: decode.username,
-      role: decode?.role ?? "user",
+      name: decode.name,
+      avatar: decode.avatar,
+      group: decode?.role ?? "user",
       lang: decode?.lang ?? ["vi"],
     };
   } catch (e) {

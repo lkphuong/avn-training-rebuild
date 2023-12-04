@@ -20,14 +20,14 @@ app.http("api_0021_update_post", {
       const id = request.params.id;
 
       const token = request.headers.get("authorization");
-      // const decode = await decodeJWT(token);
-      // if (!decode) {
-      //   return (context.res = {
-      //     status: StatusCodes.BAD_REQUEST,
-      //     body: success(null, "Vui lòng đăng nhập trước khi gọi request."),
-      //     headers: HEADERS,
-      //   });
-      // }
+      const decode = await decodeJWT(token);
+      if (!decode) {
+        return (context.res = {
+          status: StatusCodes.BAD_REQUEST,
+          body: success(null, "Vui lòng đăng nhập trước khi gọi request."),
+          headers: HEADERS,
+        });
+      }
 
       await client.connect();
       const database = client.db(DB_NAME);
