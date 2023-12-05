@@ -118,14 +118,14 @@ app.http("api_0002_get-account-is-user", {
             data: accountsFormated,
             total: total,
           },
-          ERROR_MESSAGE.NO_CONTENT
+          ERROR_MESSAGE.NOT_FOUND
         ),
         headers: HEADERS,
       });
     }
     return (context.res = {
       status: StatusCodes.OK,
-      body: success(null, ERROR_MESSAGE.NO_CONTENT),
+      body: success(null, ERROR_MESSAGE.NOT_FOUND),
       headers: HEADERS,
     });
   },

@@ -31,14 +31,14 @@ app.http("api_0024_topic_get_by_id", {
     if (topic) {
       return (context.res = {
         status: StatusCodes.OK,
-        body: success(topic, ERROR_MESSAGE.NO_CONTENT),
+        body: success(topic, null),
         headers: HEADERS,
       });
     }
 
     return (context.res = {
       status: StatusCodes.NOT_FOUND,
-      body: success(null, ERROR_MESSAGE.NO_CONTENT),
+      body: success(null, ERROR_MESSAGE.NOT_FOUND),
       headers: HEADERS,
     });
   },

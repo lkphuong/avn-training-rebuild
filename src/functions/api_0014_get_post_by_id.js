@@ -99,7 +99,7 @@ app.http("api_0014_get_post_by_id", {
 
     return (context.res = {
       status: StatusCodes.NOT_FOUND,
-      body: success(null, ERROR_MESSAGE.NO_CONTENT),
+      body: success(null, ERROR_MESSAGE.NOT_FOUND),
       headers: HEADERS,
     });
   },

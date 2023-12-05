@@ -7,6 +7,7 @@ const { ERROR_MESSAGE } = require("../../constant/error_message");
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { HEADERS } = require("../../constant/header");
 const { SORT_TYPE } = require("../../constant/sort_type");
+const { SORT_BY } = require("../../constant/sort_by");
 
 const client = new MongoClient(CONNECTION_STRING);
 
@@ -97,7 +98,7 @@ app.http("api_0023_topic_get_pagination", {
 
       return (context.res = {
         status: StatusCodes.NOT_FOUND,
-        body: success(null, ERROR_MESSAGE.NO_CONTENT),
+        body: success(null, ERROR_MESSAGE.NOT_FOUND),
         headers: HEADERS,
       });
     } catch (e) {

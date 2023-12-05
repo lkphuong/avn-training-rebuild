@@ -5,9 +5,7 @@ const { StatusCodes } = require("http-status-codes");
 const { success } = require("../../utils");
 
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
-const { ERROR_MESSAGE } = require("../../constant/error_message");
 const { HEADERS } = require("../../constant/header");
-const { validateCreateTopic } = require("../../validations/create_topic");
 
 const client = new MongoClient(CONNECTION_STRING);
 app.http("api_0030_topic_delete_by_id", {

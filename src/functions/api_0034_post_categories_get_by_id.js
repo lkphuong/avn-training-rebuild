@@ -10,25 +10,25 @@ const { HEADERS } = require("../../constant/header");
 
 const client = new MongoClient(CONNECTION_STRING);
 
-app.http("api_0024_topic_get_by_slug", {
+app.http("api_0034_post_categories_get_by_id", {
   methods: ["GET"],
   authLevel: "anonymous",
-  route: "topics/getBySlug/{slug}",
+  route: "post-categories/getById/{id}",
   handler: async (request, context) => {
     context.log(`Http function processed request for url "${request.url}"`);
 
-    const slug = request.params.slug;
+    const id = request.params.id;
 
     await client.connect();
     const database = client.db(DB_NAME);
-    const collection = database.collection(COLLECTION.TOPIC);
+    const collection = database.collection(COLLECTION.POST_CATEGORIES);
 
-    const topic = await collection.findOne({ slug: slug, deleted: false });
+    const category = await collection.findOne({ _id: new ObjectId(id) });
 
-    if (topic) {
+    if (category) {
       return (context.res = {
         status: StatusCodes.OK,
-        body: success(topic, ERROR_MESSAGE.NOT_FOUND),
+        body: success(category, null),
         headers: HEADERS,
       });
     }

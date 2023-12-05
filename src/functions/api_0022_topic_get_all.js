@@ -17,7 +17,6 @@ app.http("api_0022_topic_get_all", {
     try {
       context.log(`Http function processed request for url "${request.url}"`);
 
-      const query = request.query;
       const token = request.headers.get("authorization");
       const decode = await decodeJWT(token);
       if (!decode) {
@@ -57,7 +56,7 @@ app.http("api_0022_topic_get_all", {
         });
       }
       return (context.res = {
-        status: StatusCodes.NO_CONTENT,
+        status: StatusCodes.NOT_FOUND,
         body: success(null, "Không dữ liệu hiển thị."),
         headers: HEADERS,
       });

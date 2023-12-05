@@ -32,7 +32,7 @@ app.http("api_0001_get-all-account", {
     }
     return (context.res = {
       status: StatusCodes.OK,
-      body: success(data, ERROR_MESSAGE.NO_CONTENT),
+      body: success(data, ERROR_MESSAGE.NOT_FOUND),
       headers: HEADERS,
     });
   },

@@ -28,7 +28,7 @@ app.http("api_0012_get_all_posts", {
     }
     return (context.res = {
       status: StatusCodes.NOT_FOUND,
-      body: success(data, ERROR_MESSAGE.NO_CONTENT),
+      body: success(data, ERROR_MESSAGE.NOT_FOUND),
       headers: HEADERS,
     });
   },
