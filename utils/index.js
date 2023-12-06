@@ -29,6 +29,7 @@ const decodeJWT = async (data) => {
     const decode = await jwt.verify(token[1], JWT_KEY);
     console.log("decode: ", decode);
     return {
+      _id: decode._id,
       username: decode.username,
       name: decode.name,
       avatar: decode.avatar,

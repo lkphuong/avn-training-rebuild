@@ -1,6 +1,8 @@
 const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
+const { default: slugify } = require("slugify");
+
 const { success, decodeJWT } = require("../../utils");
 
 const { ERROR_MESSAGE } = require("../../constant/error_message");
@@ -12,7 +14,6 @@ const { DEFAULT_MAX_ITEM_PER_PAGE } = require("../../constant/setting");
 const { CONNECTION_STRING, COLLECTION, DB_NAME } = require("../../config");
 const { HEADERS } = require("../../constant/header");
 const { SOURCE_LINK } = require("../../constant/exam_type");
-const { default: slugify } = require("slugify");
 
 const client = new MongoClient(CONNECTION_STRING);
 

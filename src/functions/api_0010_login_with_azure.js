@@ -28,7 +28,6 @@ app.http("api_0010_login_with_azure", {
     const data = await request.json();
 
     const { code } = data;
-    console.log("start: ", new Date());
     const urlData = new URLSearchParams({
       client_id: AZURE_CONFIG.AZURE_CLIENT_ID,
       scope: "user.read",
@@ -102,6 +101,7 @@ app.http("api_0010_login_with_azure", {
       });
       const accessToken = jwt.sign(
         {
+          _id: account._id,
           username: account.username,
           name: account.name,
           avatar: account?.avatar ?? "",
