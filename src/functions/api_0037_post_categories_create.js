@@ -6,7 +6,7 @@ const { success } = require("../../utils");
 
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { HEADERS } = require("../../constant/header");
-const { default: slugify } = require("slugify");
+// const { default: slugify } = require("slugify");
 
 const client = new MongoClient(CONNECTION_STRING);
 

@@ -7,7 +7,6 @@ const { success } = require("../../utils");
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { ERROR_MESSAGE } = require("../../constant/error_message");
 const { HEADERS } = require("../../constant/header");
-const { POST_TYPE } = require("../../constant/post_type");
 
 const client = new MongoClient(CONNECTION_STRING);
 

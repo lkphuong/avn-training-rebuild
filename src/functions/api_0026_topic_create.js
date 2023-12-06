@@ -1,7 +1,6 @@
 const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
-const { default: slugify } = require("slugify");
 
 const { success } = require("../../utils");
 

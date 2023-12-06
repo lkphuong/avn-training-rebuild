@@ -1,14 +1,14 @@
 const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
-const { default: slugify } = require("slugify");
+// const slugify = require("slugify");
 
 const { success } = require("../../utils");
 
-const { validateCreatePost } = require("../../validations/create_post");
-const { CONNECTION_STRING, COLLECTION, DB_NAME } = require("../../config");
+const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
+const { ERROR_MESSAGE } = require("../../constant/error_message");
 const { HEADERS } = require("../../constant/header");
-const { SOURCE_LINK } = require("../../constant/exam_type");
+const { POST_TYPE } = require("../../constant/post_type");
 
 const client = new MongoClient(CONNECTION_STRING);
 

@@ -9,7 +9,7 @@ const { HEADERS } = require("../../constant/header");
 
 const client = new MongoClient(CONNECTION_STRING);
 
-app.http("api_0021_update_post", {
+app.http("api_0021_delete_post", {
   methods: ["DELETE"],
   authLevel: "anonymous",
   route: "posts/delete/deleteById/{id}",

@@ -2,16 +2,8 @@ const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 const { success } = require("../../utils");
-
-const { ERROR_MESSAGE } = require("../../constant/error_message");
-
-const { SORT_BY } = require("../../constant/sort_by");
-const { SORT_TYPE } = require("../../constant/sort_type");
-const { validateCreatePost } = require("../../validations/create_post");
-const { DEFAULT_MAX_ITEM_PER_PAGE } = require("../../constant/setting");
 const { CONNECTION_STRING, COLLECTION, DB_NAME } = require("../../config");
 const { HEADERS } = require("../../constant/header");
-const { SOURCE_LINK } = require("../../constant/exam_type");
 
 const client = new MongoClient(CONNECTION_STRING);
 
@@ -30,7 +22,7 @@ app.http("api_0019_update_active_post", {
       const database = client.db(DB_NAME);
       const collection = database.collection(COLLECTION.POST);
 
-      await collection.updateOne(
+      await collection.findOneAndUpdate(
         {
           _id: new ObjectId(id),
         },

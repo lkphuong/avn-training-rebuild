@@ -1,19 +1,9 @@
 const { app } = require("@azure/functions");
-const { MongoClient, ObjectId } = require("mongodb");
+const { MongoClient } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
-const { default: slugify } = require("slugify");
-
 const { success, decodeJWT } = require("../../utils");
-
-const { ERROR_MESSAGE } = require("../../constant/error_message");
-
-const { SORT_BY } = require("../../constant/sort_by");
-const { SORT_TYPE } = require("../../constant/sort_type");
-const { validateCreatePost } = require("../../validations/create_post");
-const { DEFAULT_MAX_ITEM_PER_PAGE } = require("../../constant/setting");
 const { CONNECTION_STRING, COLLECTION, DB_NAME } = require("../../config");
 const { HEADERS } = require("../../constant/header");
-const { SOURCE_LINK } = require("../../constant/exam_type");
 
 const client = new MongoClient(CONNECTION_STRING);
 
@@ -62,7 +52,8 @@ app.http("api_0020_update_by_id", {
       }
 
       if (post.title !== data.title) {
-        const slug = slugify(data.title, { locale: "vi", lower: true });
+        const slug =
+          slugify(data.title, { locale: "vi", lower: true }) + "-" + Date.now();
 
         const existPost = await collection.findOne({ slug });
         if (existPost) {

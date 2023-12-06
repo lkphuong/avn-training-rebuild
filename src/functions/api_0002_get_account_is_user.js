@@ -12,7 +12,7 @@ const { CONNECTION_STRING, COLLECTION, DB_NAME } = require("../../config");
 const { HEADERS } = require("../../constant/header");
 const client = new MongoClient(CONNECTION_STRING);
 
-app.http("api_0002_get-account-is-user", {
+app.http("api_0002_get_account_is_user", {
   methods: ["GET"],
   authLevel: "anonymous",
   route: "accounts/users",

@@ -1,6 +1,6 @@
 const { app } = require("@azure/functions");
 const moment = require("moment");
-const { MongoClient, ObjectId } = require("mongodb");
+const { MongoClient } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 
 const { success } = require("../../utils");

@@ -9,7 +9,7 @@ const { HEADERS } = require("../../constant/header");
 
 const client = new MongoClient(CONNECTION_STRING);
 
-app.http("api_0001_get-all-account", {
+app.http("api_0001_get_all_account", {
   methods: ["GET"],
   authLevel: "anonymous",
   route: "accounts",

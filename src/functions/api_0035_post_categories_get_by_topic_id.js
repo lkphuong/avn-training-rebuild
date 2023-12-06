@@ -1,5 +1,5 @@
 const { app } = require("@azure/functions");
-const { MongoClient, ObjectId } = require("mongodb");
+const { MongoClient } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 
 const { success } = require("../../utils");
@@ -10,7 +10,7 @@ const { HEADERS } = require("../../constant/header");
 
 const client = new MongoClient(CONNECTION_STRING);
 
-app.http("api_0034_post_categories_get_by_topic_id", {
+app.http("api_0035_post_categories_get_by_topic_id", {
   methods: ["GET", "POST"],
   authLevel: "anonymous",
   route: "post-categories/getByTopicId/{topicId}",

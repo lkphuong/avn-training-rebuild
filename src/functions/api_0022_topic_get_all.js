@@ -3,7 +3,6 @@ const { MongoClient } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 
 const { success, decodeJWT } = require("../../utils");
-const { ERROR_MESSAGE } = require("../../constant/error_message");
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { HEADERS } = require("../../constant/header");
 
