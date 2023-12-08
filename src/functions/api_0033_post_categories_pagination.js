@@ -33,7 +33,6 @@ app.http("api_0033_post_categories_pagination", {
       const database = client.db(DB_NAME);
       const collection = database.collection(COLLECTION.POST_CATEGORIES);
       const fileCollection = database.collection(COLLECTION.FILE);
-      const topicCollection = database.collection(COLLECTION.TOPIC);
 
       const query = request.query;
       const limit = query.limit || DEFAULT_MAX_ITEM_PER_PAGE;

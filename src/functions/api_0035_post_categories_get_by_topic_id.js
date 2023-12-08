@@ -1,5 +1,5 @@
 const { app } = require("@azure/functions");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 
 const { success } = require("../../utils");
@@ -26,7 +26,7 @@ app.http("api_0035_post_categories_get_by_topic_id", {
       const fileCollection = database.collection(COLLECTION.FILE);
 
       const postCategories = await collection
-        .find({ topicId: topicId })
+        .find({ topicId: new ObjectId(topicId) })
         .toArray();
 
       if (postCategories?.length) {
@@ -34,18 +34,23 @@ app.http("api_0035_post_categories_get_by_topic_id", {
         const bigBannerIds = postCategories.map((e) => e.bigBanner);
 
         const [banners, bigBanners] = await Promise.all([
-          fileCollection.find({ _id: { $in: bannerIds } }),
-          fileCollection.find({ _id: { $in: bigBannerIds } }),
+          fileCollection.find({ _id: { $in: bannerIds } }).toArray(),
+          fileCollection.find({ _id: { $in: bigBannerIds } }).toArray(),
         ]);
 
-        postCategoryFormated = postCategories.map((category) => {
-          const banner = banners.find((e) => e._id == category.banner);
-          const bigBanner = bigBanners((e) => e._id == category.bigBanner);
-
+        const postCategoryFormated = postCategories.map((category) => {
+          const banner = category?.banner
+            ? banners.find(
+                (e) => e._id.toString() == category?.banner.toString()
+              )
+            : null;
+          const bigBanner = category?.bigBanner
+            ? bigBanners.find((e) => e._id.toString() == category?.bigBanner)
+            : null;
           return {
+            ...category,
             banner: banner ?? null,
             bigBanner: bigBanner ?? null,
-            ...category,
           };
         });
 

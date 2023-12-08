@@ -24,7 +24,6 @@ app.http("api_0034_post_categories_get_by_id", {
     const collection = database.collection(COLLECTION.POST_CATEGORIES);
 
     const category = await collection.findOne({ _id: new ObjectId(id) });
-
     if (category) {
       return (context.res = {
         status: StatusCodes.OK,

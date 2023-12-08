@@ -17,6 +17,8 @@ app.http("api_0036_post_categories_get_by_slug", {
     try {
       context.log(`Http function processed request for url "${request.url}"`);
 
+      const slug = request.params.slug;
+
       await client.connect();
       const database = client.db(DB_NAME);
       const collection = database.collection(COLLECTION.POST_CATEGORIES);
@@ -31,7 +33,7 @@ app.http("api_0036_post_categories_get_by_slug", {
 
         return (context.res = {
           status: StatusCodes.OK,
-          body: success({ bigBanner: bigBanner, ...postCategory }, null),
+          body: success({ ...postCategory, bigBanner: bigBanner }, null),
           headers: HEADERS,
         });
       }
