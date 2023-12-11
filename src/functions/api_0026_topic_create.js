@@ -2,10 +2,9 @@ const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 
-const { success } = require("../../utils");
+const { success, _slugify } = require("../../utils");
 
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
-const { ERROR_MESSAGE } = require("../../constant/error_message");
 const { HEADERS } = require("../../constant/header");
 const { validateCreateTopic } = require("../../validations/create_topic");
 
@@ -38,13 +37,7 @@ app.http("api_0026_topic_create", {
     await collection.insertOne({
       _id,
       deleted: false,
-      slug:
-        slugify(data.name, {
-          locale: "vi",
-          lower: true,
-        }) +
-        "-" +
-        Date.now(),
+      slug: _slugify(data.name) + "-" + Date.now(),
       ...data,
     });
 

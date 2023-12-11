@@ -1,9 +1,8 @@
 const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
-// const { default: slugify } = require("slugify");
 
-const { success } = require("../../utils");
+const { success, _slugify } = require("../../utils");
 const { validateCreateTopic } = require("../../validations/create_topic");
 
 const { CONNECTION_STRING, COLLECTION, DB_NAME } = require("../../config");
@@ -48,8 +47,7 @@ app.http("api_0027_topic_update_by_id", {
     }
 
     if (topic.name == data.name) {
-      const slug =
-        slugify(data.name, { locale: "vi", lower: true }) + "-" + Date.now();
+      const slug = _slugify(data.name) + "-" + Date.now();
       const existTopic = await collection.findOne({ slug: slug });
 
       if (existTopic) {

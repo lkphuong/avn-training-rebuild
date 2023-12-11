@@ -2,7 +2,7 @@ const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 
-const { success } = require("../../utils");
+const { success, _slugify } = require("../../utils");
 
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { HEADERS } = require("../../constant/header");
@@ -40,7 +40,7 @@ app.http("api_0038_post_categories_update_by_id", {
           $set: {
             bigBanner: data.bigBanner === "remove" ? null : data.bigBanner,
             slug:
-              slugify(data.name, {
+              _slugify(data.name, {
                 locale: "vi",
                 lower: true,
               }) +

@@ -1,7 +1,7 @@
 const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
-const { success } = require("../../utils");
+const { success, _slugify } = require("../../utils");
 
 const { ERROR_MESSAGE } = require("../../constant/error_message");
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
@@ -60,7 +60,7 @@ app.http("api_0033_post_categories_pagination", {
       };
 
       if (query.title) {
-        const slug = slugify(query.title, { locale: "vi", lower: true });
+        const slug = _slugify(query.title);
 
         searchObj.slug = {
           $regex: ".*" + slug + ".*",

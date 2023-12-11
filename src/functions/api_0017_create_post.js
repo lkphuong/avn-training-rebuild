@@ -1,9 +1,8 @@
 const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
-// const slugify = require("slugify");
 
-const { success } = require("../../utils");
+const { success, _slugify } = require("../../utils");
 
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { ERROR_MESSAGE } = require("../../constant/error_message");
@@ -69,8 +68,7 @@ app.http("api_0017_create_post", {
 
     await collection.insertOne({
       _id,
-      slug:
-        slugify(data.title, { locale: "vi", lower: true }) + "-" + Date.now(),
+      slug: _slugify(data.title) + "-" + Date.now(),
       deleted: false,
       ...data,
     });

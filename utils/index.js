@@ -1,5 +1,4 @@
 const dayjs = require("dayjs");
-const { CryptoProvider } = require("@azure/msal-node");
 const { JWT_KEY } = require("../config");
 const jwt = require("jsonwebtoken");
 
@@ -48,4 +47,26 @@ const getLanguage = (role) => {
   return ["vi", "en"];
 };
 
-module.exports = { success, getDateNowFormat, getDateNow, decodeJWT };
+const removeDiacritics = (str) => {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+};
+
+const _slugify = (input) => {
+  let result = removeDiacritics(input.trim());
+
+  // Replace spaces with hyphens
+  result = result.replace(/\s+/g, "-");
+
+  // Remove non-alphanumeric characters
+  result = result.replace(/[^a-zA-Z0-9-]/g, "");
+
+  return result.toLowerCase();
+};
+
+module.exports = {
+  success,
+  getDateNowFormat,
+  getDateNow,
+  decodeJWT,
+  _slugify,
+};
