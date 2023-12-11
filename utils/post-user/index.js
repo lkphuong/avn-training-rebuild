@@ -1,12 +1,16 @@
+const { ObjectId } = require("mongodb");
+const { DEFAULT_MAX_ITEM_PER_PAGE } = require("../../constant/setting");
+const { SORT_BY } = require("../../constant/sort_by");
+const { SORT_TYPE } = require("../../constant/sort_type");
+
 const findUserViewedByPost = async (
   postId,
   query,
-  collection,
+  postUserCollection,
   accountCollection
 ) => {
   let countVieweds = 0,
     userViewedFormateds = [];
-
   if (query) {
     const limit = query.limit || DEFAULT_MAX_ITEM_PER_PAGE;
     const page = query.page || 1;
@@ -17,16 +21,44 @@ const findUserViewedByPost = async (
       sortBy = query.sortBy;
     }
 
-    const userVieweds = await collection
-      .find({ ...query, postId: postId })
+    const userVieweds = await postUserCollection
+      .find({ postId: new ObjectId(postId) })
       .skip(offset)
       .limit(limit)
-      .sort(sortBy)
       .toArray();
 
-    countVieweds = await collection.countDocuments({
+    countVieweds = await postUserCollection.countDocuments({
       ...query,
       postId: postId,
+    });
+
+    const accountIds = userVieweds.map((e) => e.accountId);
+    const accounts = await accountCollection
+      .find({
+        _id: { $in: accountIds },
+      })
+      .toArray();
+
+    userViewedFormateds = userVieweds.map((userViewed) => {
+      const account = accounts.find(
+        (a) => a._id.toString() == userViewed.accountId.toString()
+      );
+      return {
+        ...userViewed,
+        account: account,
+      };
+    });
+
+    return {
+      data: userViewedFormateds,
+      total: countVieweds,
+    };
+  } else {
+    const userVieweds = await postUserCollection
+      .find({ postId: new ObjectId(postId) })
+      .toArray();
+    countVieweds = await postUserCollection.countDocuments({
+      postId: new ObjectId(postId),
     });
 
     const accountIds = userVieweds.map((e) => e.accountId);
@@ -39,32 +71,7 @@ const findUserViewedByPost = async (
       const account = accounts.find((a) => a._id == userViewed.accountId);
       return {
         ...userViewed,
-        userId: account,
-      };
-    });
-
-    return {
-      data: userViewedFormateds,
-      total: countVieweds,
-    };
-  } else {
-    const userVieweds = await collection.find({ postId: postId }).toArray();
-
-    countVieweds = await collection.countDocuments({
-      postId: postId,
-    });
-
-    const accountIds = userVieweds.map((e) => e.accountId);
-
-    const accounts = await accountCollection.find({
-      _id: { $in: accountIds },
-    });
-
-    userViewedFormated = userVieweds.map((userViewFormated) => {
-      const account = accounts.find((a) => a._id == userViewed.accountId);
-      return {
-        ...userViewed,
-        userId: account,
+        account: account,
       };
     });
 
@@ -74,3 +81,5 @@ const findUserViewedByPost = async (
     };
   }
 };
+
+module.exports = { findUserViewedByPost };
