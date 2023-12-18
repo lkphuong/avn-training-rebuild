@@ -25,7 +25,7 @@ app.http("api_0023_topic_get_pagination", {
       const decode = await decodeJWT(token);
       if (!decode) {
         return (context.res = {
-          status: StatusCodes.BAD_REQUEST,
+          status: StatusCodes.UNAUTHORIZED,
           body: success(null, "Vui lòng đăng nhập trước khi gọi request."),
           headers: HEADERS,
         });

@@ -23,7 +23,7 @@ app.http("api_0033_post_categories_pagination", {
       const decode = await decodeJWT(token);
       if (!decode) {
         return (context.res = {
-          status: StatusCodes.BAD_REQUEST,
+          status: StatusCodes.UNAUTHORIZED,
           body: success(null, "Vui lòng đăng nhập trước khi gọi request."),
           headers: HEADERS,
         });

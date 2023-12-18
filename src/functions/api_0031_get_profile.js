@@ -14,7 +14,7 @@ app.http("api_0031_get_profile", {
     const decode = await decodeJWT(token);
     if (!decode) {
       return (context.res = {
-        status: StatusCodes.BAD_REQUEST,
+        status: StatusCodes.UNAUTHORIZED,
         body: success(null, null, "Vui lòng đăng nhập trước khi gọi request."),
         headers: HEADERS,
       });

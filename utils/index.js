@@ -41,10 +41,9 @@ const decodeJWT = async (data) => {
   }
 };
 
-const getLanguage = (role) => {
-  if (role == "user") return ["vi"];
-
-  return ["vi", "en"];
+const authorization = (data, role) => {
+  if (data.group == role) return true;
+  return false;
 };
 
 const removeDiacritics = (str) => {
@@ -68,5 +67,6 @@ module.exports = {
   getDateNowFormat,
   getDateNow,
   decodeJWT,
+  authorization,
   _slugify,
 };

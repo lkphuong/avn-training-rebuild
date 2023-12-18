@@ -20,7 +20,7 @@ app.http("api_0022_topic_get_all", {
       const decode = await decodeJWT(token);
       if (!decode) {
         return (context.res = {
-          status: StatusCodes.BAD_REQUEST,
+          status: StatusCodes.UNAUTHORIZED,
           body: success(null, "Vui lòng đăng nhập trước khi gọi request."),
           headers: HEADERS,
         });

@@ -2,11 +2,12 @@ const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 
-const { success, _slugify } = require("../../utils");
+const { success, _slugify, decodeJWT, authorization } = require("../../utils");
 const { validateCreateTopic } = require("../../validations/create_topic");
 
 const { CONNECTION_STRING, COLLECTION, DB_NAME } = require("../../config");
 const { HEADERS } = require("../../constant/header");
+const { ROLE } = require("../../constant/role");
 
 const client = new MongoClient(CONNECTION_STRING);
 
@@ -16,6 +17,24 @@ app.http("api_0027_topic_update_by_id", {
   route: "topics/update/updateById/{id}",
   handler: async (request, context) => {
     context.log(`Http function processed request for url "${request.url}"`);
+
+    const token = request.headers.get("authorization");
+    const decode = await decodeJWT(token);
+    if (!decode) {
+      return (context.res = {
+        status: StatusCodes.UNAUTHORIZED,
+        body: success(null, "Vui lòng đăng nhập trước khi gọi request."),
+        headers: HEADERS,
+      });
+    }
+
+    if (!authorization(decode, ROLE.ADMIN)) {
+      return (context.res = {
+        status: StatusCodes.FORBIDDEN,
+        body: success(null, "Không có quyền gọi request."),
+        headers: HEADERS,
+      });
+    }
 
     const data = await request.json();
     const id = request.params.id;

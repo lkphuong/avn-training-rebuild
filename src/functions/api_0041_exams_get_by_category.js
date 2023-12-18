@@ -2,7 +2,7 @@ const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 
-const { success } = require("../../utils");
+const { success, decodeJWT } = require("../../utils");
 
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { HEADERS } = require("../../constant/header");
@@ -16,6 +16,16 @@ app.http("api_0041_exams_get_by_category", {
   handler: async (request, context) => {
     try {
       context.log(`Http function processed request for url "${request.url}"`);
+
+      const token = request.headers.get("authorization");
+      const decode = await decodeJWT(token);
+      if (!decode) {
+        return (context.res = {
+          status: StatusCodes.UNAUTHORIZED,
+          body: success(null, "Vui lòng đăng nhập trước khi gọi request."),
+          headers: HEADERS,
+        });
+      }
 
       const categoryId = request.params.categoryId;
 

@@ -2,17 +2,18 @@ const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 
-const { success, decodeJWT } = require("../../utils");
+const { success, decodeJWT, authorization } = require("../../utils");
 
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { HEADERS } = require("../../constant/header");
+const { ROLE } = require("../../constant/role");
 
 const client = new MongoClient(CONNECTION_STRING);
 
-app.http("api_0042_exams_get_by_post", {
-  methods: ["GET"],
+app.http("api_0051_create_post_user", {
+  methods: ["POST"],
   authLevel: "anonymous",
-  route: "exams/getByPostId/{postId}",
+  route: "post-users/create",
   handler: async (request, context) => {
     try {
       context.log(`Http function processed request for url "${request.url}"`);
@@ -27,41 +28,32 @@ app.http("api_0042_exams_get_by_post", {
         });
       }
 
-      const postId = request.params.postId;
-
-      await client.connect();
-      const database = client.db(DB_NAME);
-      const collection = database.collection(COLLECTION.EXAM);
-      const postCollection = database.collection(COLLECTION.POST);
-
-      const post = await postCollection.findOne({ _id: new ObjectId(postId) });
-
-      if (post) {
-        const testDetail = await collection.findOne({
-          sourceId: new ObjectId(post._id),
-        });
-
-        const total = await postCollection.countDocuments({
-          categoryId: new ObjectId(post.categoryId),
-          deleted: false,
-        });
-
+      if (!authorization(decode, ROLE.ADMIN)) {
         return (context.res = {
-          status: StatusCodes.OK,
-          body: success(
-            {
-              ...testDetail,
-              totalPost: total,
-            },
-            null
-          ),
+          status: StatusCodes.FORBIDDEN,
+          body: success(null, "Không có quyền gọi request."),
           headers: HEADERS,
         });
       }
 
+      const data = await request.json();
+
+      await client.connect();
+      const database = client.db(DB_NAME);
+      const collection = database.collection(COLLECTION.POST_USER);
+
+      const _id = new ObjectId();
+
+      await collection.insertOne({ _id, ...data });
+
       return (context.res = {
-        status: StatusCodes.NOT_FOUND,
-        body: success(null, "Không có dữ liệu hiển thị."),
+        status: StatusCodes.OK,
+        body: success(
+          {
+            _id,
+          },
+          null
+        ),
         headers: HEADERS,
       });
     } catch (e) {

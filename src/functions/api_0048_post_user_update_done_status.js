@@ -23,7 +23,7 @@ app.http("api_0048_post_user_update_done_status", {
       const decode = await decodeJWT(token);
       if (!decode) {
         return (context.res = {
-          status: StatusCodes.BAD_REQUEST,
+          status: StatusCodes.UNAUTHORIZED,
           body: success(null, "Vui lòng đăng nhập trước khi gọi request."),
           headers: HEADERS,
         });
