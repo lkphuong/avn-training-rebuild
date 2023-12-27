@@ -37,34 +37,32 @@ app.http("api_0023_topic_get_pagination", {
       const fileCollection = database.collection(COLLECTION.FILE);
 
       //
-      const limit = query.limit || 10;
-      const page = query.page || 1;
-      const lang = query.lang ?? "vi";
+      const limit = query.get("limit") || 10;
+      const page = query.get("page") || 1;
+      const lang = query.get("lang") ?? "vi";
       const offset = (page - 1) * limit;
       let sortBy = SORT_BY.SORT_ORDER;
       let sortType = SORT_TYPE.DESC;
-
-      if (query.sortType) {
-        sortType = query.sortType;
-      }
-
-      if (query.sortBy) {
-        sortBy = query.sortBy;
-      }
-
-      const sort = sortType === SORT_TYPE.DESC ? "-" + sortBy : sortBy;
 
       const searchObj = {
         deleted: false,
         lang: { $in: decode?.lang ?? ["vi"] },
       };
 
-      if (query.active) {
-        searchObj.active = query.active;
+      if (query.get("active")) {
+        searchObj.active = query.get("active") == "true" ? true : false;
       }
 
-      if (query.isPin) {
-        searchObj.isPin = query.isPin;
+      if (query.get("isPin")) {
+        searchObj.isPin = query.get("isPin") == "true" ? true : false;
+      }
+
+      let sort = { sortOrder: -1 };
+      if (query.get("sortType")) {
+        sort =
+          query.get("sortType") == SORT_TYPE.ASC
+            ? { createdAt: 1 }
+            : { createdAt: -1 };
       }
 
       const topics = await collection

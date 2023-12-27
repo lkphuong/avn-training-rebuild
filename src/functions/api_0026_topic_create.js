@@ -38,14 +38,14 @@ app.http("api_0026_topic_create", {
 
     const data = await request.json();
 
-    const validationErrors = validateCreateTopic(data);
-    if (validationErrors.length > 0) {
-      return (context.res = {
-        status: StatusCodes.BAD_REQUEST,
-        body: success(null, null, validationErrors),
-        headers: HEADERS,
-      });
-    }
+    // const validationErrors = validateCreateTopic(data);
+    // if (validationErrors.length > 0) {
+    //   return (context.res = {
+    //     status: StatusCodes.BAD_REQUEST,
+    //     body: success(null, null, validationErrors),
+    //     headers: HEADERS,
+    //   });
+    // }
 
     await client.connect();
     const database = client.db(DB_NAME);

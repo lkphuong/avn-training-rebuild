@@ -50,7 +50,7 @@ app.http("api_0022_topic_get_all", {
         });
         return (context.res = {
           status: StatusCodes.OK,
-          body: success({ results }, null),
+          body: success(results, null),
           headers: HEADERS,
         });
       }

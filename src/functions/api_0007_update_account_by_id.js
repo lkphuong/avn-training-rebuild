@@ -8,6 +8,7 @@ const { validateUpdateAccount } = require("../../validations/update_account");
 
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { ERROR_MESSAGE } = require("../../constant/error_message");
+const { HEADERS } = require("../../constant/header");
 
 const client = new MongoClient(CONNECTION_STRING);
 
@@ -40,9 +41,7 @@ app.http("api_0007_update_account_by_id", {
           validationErrors[0],
           JSON.stringify(validationErrors)
         ),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: HEADERS,
       });
     }
 
@@ -57,9 +56,7 @@ app.http("api_0007_update_account_by_id", {
       return (context.res = {
         status: StatusCodes.NOT_FOUND,
         body: success(null, ERROR_MESSAGE.GET_ACCOUNT_BY_ID_NOT_FOUND),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: HEADERS,
       });
     }
 
@@ -78,19 +75,20 @@ app.http("api_0007_update_account_by_id", {
       );
     }
 
+    if (data._id) {
+      delete data._id;
+    }
+
     await collection.findOneAndUpdate(
       { _id: new ObjectId(id) },
       {
         $set: { ...data },
       }
     );
-
     return (context.res = {
       status: StatusCodes.OK,
       body: success({ _id: id }, null),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: HEADERS,
     });
   },
 });

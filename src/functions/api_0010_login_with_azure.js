@@ -92,17 +92,22 @@ app.http("api_0010_login_with_azure", {
     const groupCollection = database.collection(COLLECTION.GROUP);
 
     const account = await accountCollection.findOne({
-      username: getProfile?.access_token?.id,
+      token_id: getProfile?.access_token?.id,
     });
+
     if (account) {
+      const userGroup = await userGroupCollection.findOne({
+        userId: account.userId,
+      });
       // gen jwt token
       const group = await groupCollection.findOne({
-        _id: new ObjectId(account.groupId),
+        _id: new ObjectId(userGroup.groupId),
       });
       const accessToken = jwt.sign(
         {
           _id: account._id,
           username: account.username,
+          token_id: account?.token_id,
           name: account.name,
           avatar: account?.avatar ?? "",
           lang: group?.name == "admin" ? ["vi", "en"] : ["vi"],
@@ -123,7 +128,7 @@ app.http("api_0010_login_with_azure", {
       const newUserID = new ObjectId();
       const newAccountID = new ObjectId();
 
-      const newInfo = await Promise.all([
+      await Promise.all([
         userCollection.insertOne({
           _id: newUserID,
           department: getProfile?.access_token?.department ?? null,
@@ -134,7 +139,7 @@ app.http("api_0010_login_with_azure", {
         }),
         accountCollection.insertOne({
           _id: newAccountID,
-          username: getProfile?.access_token?.id ?? "",
+          token_id: getProfile?.access_token?.id ?? "",
           name: getProfile?.access_token?.displayName ?? "",
           birthday: getProfile?.access_token?.birthday,
           email: getProfile?.access_token?.mail ?? "",

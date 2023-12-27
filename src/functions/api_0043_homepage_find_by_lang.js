@@ -29,7 +29,9 @@ app.http("api_0043_homepage_find_by_lang", {
       if (homepage?.slides?.length) {
         const fileIds = homepage.slides.map((slide) => ({ _id: slide?.file }));
 
-        const files = await fileCollection.find({ $in: fileIds });
+        const files = await fileCollection
+          .find({ _id: { $in: fileIds } })
+          .toArray();
 
         homepage.slides = homepage.slides.map((slide) => {
           const file = files.find((e) => {

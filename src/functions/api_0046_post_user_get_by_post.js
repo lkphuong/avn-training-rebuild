@@ -43,7 +43,7 @@ app.http("api_0046_post_user_get_by_post", {
         const limit = query.limit || DEFAULT_MAX_ITEM_PER_PAGE;
         const page = query.page || 1;
         const offset = (page - 1) * limit;
-        let sortBy = query.sortBy || "-" + SORT_BY.CREATED_AT;
+        let sortBy = query.sortBy || SORT_BY.CREATED_AT;
 
         if (query.sortType === SORT_TYPE.ASC) {
           sortBy = query.sortBy;
@@ -53,7 +53,7 @@ app.http("api_0046_post_user_get_by_post", {
           .find({ ...query, postId: postId })
           .skip(offset)
           .limit(limit)
-          .sort(sortBy)
+          .sort({ createdAt: -1 })
           .toArray();
 
         countVieweds = await collection.countDocuments({

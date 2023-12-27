@@ -39,17 +39,17 @@ app.http("api_0027_topic_update_by_id", {
     const data = await request.json();
     const id = request.params.id;
 
-    const validationErrors = validateCreateTopic(data);
+    // const validationErrors = validateCreateTopic(data);
 
-    if (validationErrors.length > 0) {
-      console.log("validationErrors.length: ", 1234);
-      return (context.res = {
-        status: StatusCodes.BAD_REQUEST,
-        body: success(null, null, validationErrors),
-        headers: HEADERS,
-      });
-    }
-    console.log("validationErrors.length: ", validationErrors.length);
+    // if (validationErrors.length > 0) {
+    //   console.log("validationErrors.length: ", 1234);
+    //   return (context.res = {
+    //     status: StatusCodes.BAD_REQUEST,
+    //     body: success(null, null, validationErrors),
+    //     headers: HEADERS,
+    //   });
+    // }
+
     await client.connect();
     const database = client.db(DB_NAME);
     const collection = database.collection(COLLECTION.TOPIC);
@@ -79,6 +79,8 @@ app.http("api_0027_topic_update_by_id", {
 
       data.slug = slug;
     }
+
+    if (data._id) delete data._id;
 
     const result = await collection.findOneAndUpdate(
       { _id: new ObjectId(id) },

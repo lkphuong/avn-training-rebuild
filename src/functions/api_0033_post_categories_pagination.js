@@ -1,13 +1,14 @@
 const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
-const { success, _slugify } = require("../../utils");
+const { success, _slugify, decodeJWT } = require("../../utils");
 
 const { ERROR_MESSAGE } = require("../../constant/error_message");
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { SORT_BY } = require("../../constant/sort_by");
 const { SORT_TYPE } = require("../../constant/sort_type");
 const { DEFAULT_MAX_ITEM_PER_PAGE } = require("../../constant/setting");
+const { HEADERS } = require("../../constant/header");
 
 const client = new MongoClient(CONNECTION_STRING);
 
@@ -35,31 +36,16 @@ app.http("api_0033_post_categories_pagination", {
       const fileCollection = database.collection(COLLECTION.FILE);
 
       const query = request.query;
-      const limit = query.limit || DEFAULT_MAX_ITEM_PER_PAGE;
-      const page = query.page || 1;
+      const limit = query.get("limit") || DEFAULT_MAX_ITEM_PER_PAGE;
+      const page = query.get("page") || 1;
       const offset = (page - 1) * limit;
-      let sortBy = SORT_BY.SORT_ORDER;
-      let createdAt = SORT_BY.CREATED_AT;
-      let sortType = SORT_TYPE.DESC;
-
-      if (query.sortType) {
-        sortType = query.sortType;
-      }
-
-      if (query.sortBy) {
-        sortBy = query.sortBy;
-      }
-
-      const sort = sortType === SORT_TYPE.DESC ? "-" + sortBy : sortBy;
-      const sort2 = sortType === SORT_TYPE.DESC ? "-" + createdAt : createdAt;
 
       const searchObj = {
-        ...query,
         deleted: false,
         lang: { $in: decode?.lang ?? ["vi"] },
       };
 
-      if (query.title) {
+      if (query.get("title")) {
         const slug = _slugify(query.title);
 
         searchObj.slug = {
@@ -68,12 +54,23 @@ app.http("api_0033_post_categories_pagination", {
         };
       }
 
+      if (query.get("active")) {
+        searchObj.active = query.get("active") == "true" ? true : false;
+      }
+
+      let sort = { sortOrder: -1 };
+      if (query.get("sortType")) {
+        sort =
+          query.get("sortType") == SORT_TYPE.ASC
+            ? { createdAt: 1 }
+            : { createdAt: -1 };
+      }
+
       const categories = await collection
         .find(searchObj)
+        .sort(sort)
         .skip(offset)
         .limit(limit)
-        .sort(sort)
-        .sort(sort2)
         .toArray();
 
       if (categories?.length) {
@@ -86,19 +83,25 @@ app.http("api_0033_post_categories_pagination", {
         }
 
         const [banners, bigBanners] = await Promise.all([
-          fileCollection.find({ _id: { $in: bannerIds } }),
-          fileCollection.find({ _id: { $in: bigBannerIds } }),
-          topicIds.find({ _id: { $in: topicIds } }),
+          fileCollection.find({ _id: { $in: bannerIds } }).toArray(),
+          fileCollection.find({ _id: { $in: bigBannerIds } }).toArray(),
+          //topicIds.find({ _id: { $in: topicIds } }),
         ]);
 
         const categoryFormateds = categories.map((category) => {
-          const banner = banners.find((e) => e._id == category.banner) ?? "";
+          console.log(category.banner);
+          const banner =
+            banners.find(
+              (e) => e._id.toString() == category.banner?.toString()
+            ) ?? "";
           const bigBanner =
-            bigBanners.find((e) => e._id == category.bigBanner) ?? "";
+            bigBanners.find(
+              (e) => e._id?.toString() == category.bigBanner?.toString()
+            ) ?? "";
           return {
+            ...category,
             banner: banner ?? null,
             bigBanner: bigBanner ?? null,
-            ...category,
           };
         });
 

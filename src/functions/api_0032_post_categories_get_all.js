@@ -47,7 +47,7 @@ app.http("api_0032_post_categories_get_all", {
       if (postCategories?.length) {
         return (context.res = {
           status: StatusCodes.OK,
-          body: success({ postCategories }, null),
+          body: success(postCategories, null),
           headers: HEADERS,
         });
       }

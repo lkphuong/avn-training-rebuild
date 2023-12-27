@@ -1,5 +1,5 @@
 const { app } = require("@azure/functions");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 const { decodeJWT } = require("../../utils/index");
 const { success } = require("../../utils");
@@ -40,7 +40,13 @@ app.http("api_0018_get_post_user_by_category", {
       const fileCollection = database.collection(COLLECTION.FILE);
       const postUserCollection = database.collection(COLLECTION.POST_USER);
 
-      const posts = await collection.find({ categoryId, ...query }).toArray();
+      const posts = await collection
+        .find({
+          categoryId: new ObjectId(categoryId),
+          active: true,
+          deleted: false,
+        })
+        .toArray();
 
       let files = [],
         categories = [];

@@ -16,7 +16,7 @@ const { ROLE } = require("../../constant/role");
 const client = new MongoClient(CONNECTION_STRING);
 
 app.http("api_0050_upload", {
-  methods: ["GET", "POST"],
+  methods: ["POST"],
   authLevel: "anonymous",
   route: "files/upload",
   handler: async (request, context) => {

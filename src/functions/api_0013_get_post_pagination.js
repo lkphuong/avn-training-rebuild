@@ -1,7 +1,7 @@
 const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
-const { success, decodeJWT } = require("../../utils");
+const { success, decodeJWT, authorization } = require("../../utils");
 
 const { ERROR_MESSAGE } = require("../../constant/error_message");
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
@@ -9,6 +9,7 @@ const { SORT_BY } = require("../../constant/sort_by");
 const { SORT_TYPE } = require("../../constant/sort_type");
 const { DEFAULT_MAX_ITEM_PER_PAGE } = require("../../constant/setting");
 const { ROLE } = require("../../constant/role");
+const { HEADERS } = require("../../constant/header");
 
 const client = new MongoClient(CONNECTION_STRING);
 
@@ -45,40 +46,36 @@ app.http("api_0013_get_post_pagination", {
 
     const query = request.query;
 
-    const limit = query.limit || DEFAULT_MAX_ITEM_PER_PAGE;
-    const page = query.page || 1;
+    const limit = query.get("limit") || DEFAULT_MAX_ITEM_PER_PAGE;
+    const page = query.get("page") || 1;
     const offset = (page - 1) * limit;
-    let sortBy = SORT_BY.SORT_ORDER;
-    let sortType = SORT_TYPE.DESC;
-
-    if (query.sortType) {
-      sortType = query.sortType;
-    }
-
-    if (query.sortBy) {
-      sortBy = query.sortBy;
-    }
-
-    const sort = sortType === SORT_TYPE.DESC ? "-" + sortBy : sortBy;
 
     const searchObj = {
       deleted: false,
       ...query,
     };
 
-    if (query.categoryId) {
+    if (query.get("categoryId")) {
       searchObj.categoryId = new ObjectId(query.categoryId);
     }
 
-    if (query.active) {
-      searchObj.active = query.active;
+    if (query.get("active")) {
+      searchObj.active = query.get("active") == "true" ? true : false;
+    }
+
+    let sort = { sortOrder: -1 };
+    if (query.get("sortType")) {
+      sort =
+        query.get("sortType") == SORT_TYPE.ASC
+          ? { createdAt: 1 }
+          : { createdAt: -1 };
     }
 
     const posts = await collection
       .find(searchObj)
+      .sort(sort)
       .skip(parseInt(offset))
       .limit(parseInt(limit))
-      .sort(sort)
       .toArray();
 
     let files = [],

@@ -48,38 +48,40 @@ app.http("api_0002_get_account_is_user", {
     const limit = query.get("limit") || DEFAULT_MAX_ITEM_PER_PAGE;
     const page = query.get("page") || 1;
     const offset = (page - 1) * limit;
-    let sortBy = query.get("sortBy") || SORT_BY.CREATED_AT;
 
-    if (query.get("sortBy") === SORT_TYPE.DESC) {
-      sortBy = "-" + (query.get("sortBy") || SORT_BY.CREATED_AT);
-    }
+    const sort = query.get("sortType") === SORT_TYPE.ASC ? 1 : -1;
 
     const keys = Object.keys(query);
     const searchObj = {
-      ...query,
       userId: {
         $ne: null,
       },
       deleted: false,
     };
 
-    if (query.username) {
+    if (query.get("username")) {
       searchObj.username = {
-        $regex: ".*" + query.username + ".*",
+        $regex: ".*" + query.get("username") + ".*",
         $options: "i",
       };
     }
 
-    if (query.name) {
+    if (query.get("name")) {
       searchObj.name = {
-        $regex: ".*" + query.name + ".*",
+        $regex: ".*" + query.get("name") + ".*",
         $options: "i",
       };
+    }
+
+    if (query.get("active")) {
+      searchObj.active = query.get("active") == "true" ? true : false;
     }
 
     keys.forEach((key) => (!query[key] ? delete query[key] : ""));
+
     const accounts = await collection
       .find(searchObj)
+      .sort({ createdAt: sort })
       .skip(parseInt(offset))
       .limit(parseInt(limit))
       .toArray();
@@ -137,11 +139,12 @@ app.http("api_0002_get_account_is_user", {
             data: accountsFormated,
             total: total,
           },
-          ERROR_MESSAGE.NOT_FOUND
+          null
         ),
         headers: HEADERS,
       });
     }
+    context.done();
     return (context.res = {
       status: StatusCodes.OK,
       body: success(null, ERROR_MESSAGE.NOT_FOUND),
