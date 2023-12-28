@@ -9,6 +9,8 @@ const { ERROR_MESSAGE } = require("../../constant/error_message");
 const { HEADERS } = require("../../constant/header");
 const { POST_TYPE } = require("../../constant/post_type");
 const { ROLE } = require("../../constant/role");
+const { validateCreatePost } = require("../../validations/create_post");
+const { SOURCE_LINK } = require("../../constant/exam_type");
 
 const client = new MongoClient(CONNECTION_STRING);
 
@@ -39,15 +41,15 @@ app.http("api_0017_create_post", {
 
     const data = await request.json();
 
-    const validationErrors = validateCreatePost(data);
+    // const validationErrors = validateCreatePost(data);
 
-    if (validationErrors.length > 0) {
-      return (context.res = {
-        status: StatusCodes.BAD_REQUEST,
-        body: success(null, null, validationErrors),
-        headers: HEADERS,
-      });
-    }
+    // if (validationErrors.length > 0) {
+    //   return (context.res = {
+    //     status: StatusCodes.BAD_REQUEST,
+    //     body: success(null, null, validationErrors),
+    //     headers: HEADERS,
+    //   });
+    // }
 
     let sourceId, sourceType;
     let existExam = false;
@@ -82,6 +84,7 @@ app.http("api_0017_create_post", {
         sourceId,
         sourceType,
         deleted: false,
+        createdAt: new Date(),
       });
     }
 
@@ -90,6 +93,7 @@ app.http("api_0017_create_post", {
       slug: _slugify(data.title) + "-" + Date.now(),
       deleted: false,
       ...data,
+      createdAt: new Date(),
     });
 
     return (context.res = {

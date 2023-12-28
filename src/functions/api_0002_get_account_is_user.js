@@ -86,6 +86,8 @@ app.http("api_0002_get_account_is_user", {
       .limit(parseInt(limit))
       .toArray();
 
+    console.log("seach obj: ", accounts);
+
     const userIds = accounts.map((e) => e.userId);
 
     const users = await userCollection
@@ -144,7 +146,6 @@ app.http("api_0002_get_account_is_user", {
         headers: HEADERS,
       });
     }
-    context.done();
     return (context.res = {
       status: StatusCodes.OK,
       body: success(null, ERROR_MESSAGE.NOT_FOUND),

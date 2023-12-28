@@ -53,6 +53,10 @@ app.http("api_0038_post_categories_update_by_id", {
         });
       }
 
+      if (data._id) {
+        delete data._id;
+        delete data.createdAt;
+      }
       await collection.findOneAndUpdate(
         { _id: new ObjectId(id) },
         {

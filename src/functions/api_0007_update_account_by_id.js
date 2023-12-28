@@ -77,14 +77,16 @@ app.http("api_0007_update_account_by_id", {
 
     if (data._id) {
       delete data._id;
+      delete data.createdAt;
     }
 
     await collection.findOneAndUpdate(
       { _id: new ObjectId(id) },
       {
-        $set: { ...data },
+        $set: { ...data, createdAt: new Date(data.createdAt) },
       }
     );
+    console.log("check: ", { ...data });
     return (context.res = {
       status: StatusCodes.OK,
       body: success({ _id: id }, null),

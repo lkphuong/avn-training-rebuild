@@ -44,7 +44,12 @@ app.http("api_0051_create_post_user", {
 
       const _id = new ObjectId();
 
-      await collection.insertOne({ _id, ...data });
+      await collection.insertOne({
+        _id,
+        ...data,
+        deleted: false,
+        createdAt: new Date(),
+      });
 
       return (context.res = {
         status: StatusCodes.OK,

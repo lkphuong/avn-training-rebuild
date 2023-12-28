@@ -65,7 +65,7 @@ app.http("api_0010_login_with_azure", {
     const getProfile = await axios
       .get(`https://graph.microsoft.com/v1.0/me`, {
         params: {
-          $select: `id,birthday,department,displayName,mobilePhone,mail,jobTitle,aboutMe`,
+          $select: `id,birthday,department,displayName,mobilePhone,mail,jobTitle,aboutMe,employeeId`,
         },
         headers: {
           Authorization: `Bearer ${token.access_token}`,
@@ -136,20 +136,27 @@ app.http("api_0010_login_with_azure", {
           section: "",
           position: getProfile?.access_token?.jobTitle ?? null,
           lang: "vi",
+          deleted: false,
+          createdAt: new Date(),
         }),
         accountCollection.insertOne({
           _id: newAccountID,
+          username: getProfile?.access_token?.employeeId ?? "",
           token_id: getProfile?.access_token?.id ?? "",
           name: getProfile?.access_token?.displayName ?? "",
           birthday: getProfile?.access_token?.birthday,
           email: getProfile?.access_token?.mail ?? "",
           phoneNumber: getProfile?.access_token?.mobilePhone ?? "",
           userId: newUserID,
+          deleted: false,
+          createdAt: new Date(),
         }),
         userGroupCollection.insertOne({
           _id: new ObjectId(),
           userId: newUserID,
           groupId: new ObjectId(GROUP_VALUES.GROUP_USER),
+          deleted: false,
+          createdAt: new Date(),
         }),
       ]);
 

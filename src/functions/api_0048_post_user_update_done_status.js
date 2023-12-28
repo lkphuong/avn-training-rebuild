@@ -47,6 +47,7 @@ app.http("api_0048_post_user_update_done_status", {
           done: data?.done ?? false,
           duration: data?.duration ?? 0,
           deleted: false,
+          createdAt: new Date(),
         });
 
         return (context.res = {
@@ -67,6 +68,11 @@ app.http("api_0048_post_user_update_done_status", {
 
         if (data.duration) {
           postView.duration = duration;
+        }
+
+        if (postView._id) {
+          delete postView._id;
+          delete postView.createdAt;
         }
 
         await collection.findOneAndUpdate(

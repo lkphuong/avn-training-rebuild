@@ -40,20 +40,15 @@ app.http("api_0046_post_user_get_by_post", {
       const accountCollection = database.collection(COLLECTION.ACCOUNT);
 
       if (query) {
-        const limit = query.limit || DEFAULT_MAX_ITEM_PER_PAGE;
-        const page = query.page || 1;
+        const limit = query.get("limit") || DEFAULT_MAX_ITEM_PER_PAGE;
+        const page = query.get("page") || 1;
         const offset = (page - 1) * limit;
-        let sortBy = query.sortBy || SORT_BY.CREATED_AT;
-
-        if (query.sortType === SORT_TYPE.ASC) {
-          sortBy = query.sortBy;
-        }
 
         const userVieweds = await collection
           .find({ ...query, postId: postId })
           .skip(offset)
           .limit(limit)
-          .sort({ createdAt: -1 })
+          .sort({ createdAt: 1 })
           .toArray();
 
         countVieweds = await collection.countDocuments({

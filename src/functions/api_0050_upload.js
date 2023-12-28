@@ -82,6 +82,7 @@ app.http("api_0050_upload", {
         path: STORAGE_ACCOUNT.URL + fileName,
         thumbnail: STORAGE_ACCOUNT.URL,
         sourceType: sourceType,
+        createdAt: new Date(),
       });
 
       return (context.res = {

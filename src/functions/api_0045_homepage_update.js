@@ -58,6 +58,11 @@ app.http("api_0045_homepage_update", {
         });
       }
 
+      if (data._id) {
+        delete data._id;
+        delete data.createdAt;
+      }
+
       await collection.findOneAndUpdate(
         { _id: new ObjectId(id) },
         {

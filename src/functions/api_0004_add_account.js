@@ -76,10 +76,12 @@ app.http("api_0004_add-account", {
       const groupUser = groups.find((g) => g.name == ACCOUNT_TYPE.USER);
 
       [user, userGroup] = await Promise.all([
-        await userCollection.insertOne({ ...userParam }),
+        await userCollection.insertOne({ ...userParam, deleted: false }),
         await userGroupCollection.insertOne({
           groupId: groupUser.id,
           userId: accountId,
+          deleted: false,
+          createdAt: new Date(),
         }),
       ]);
       console.log("user: ", user);
@@ -89,6 +91,8 @@ app.http("api_0004_add-account", {
       await userGroupCollection.insertOne({
         groupId: groupAdmin.id,
         userId: accountId,
+        deleted: false,
+        createdAt: new Date(),
       });
     }
 
@@ -96,6 +100,8 @@ app.http("api_0004_add-account", {
       _id: accountId,
       userId: user?.insertedId,
       ...data,
+      deleted: false,
+      createdAt: new Date(),
     });
 
     return (context.res = {

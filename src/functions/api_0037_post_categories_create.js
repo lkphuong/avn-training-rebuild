@@ -46,7 +46,13 @@ app.http("api_0037_post_categories_create", {
       const _id = new ObjectId();
       const slug = _slugify(data.name) + "-" + Date.now();
 
-      await collection.insertOne({ _id, slug, deleted: false, ...data });
+      await collection.insertOne({
+        _id,
+        slug,
+        deleted: false,
+        createdAt: new Date(),
+        ...data,
+      });
       return (context.res = {
         status: StatusCodes.OK,
         body: success({ _id }, null),

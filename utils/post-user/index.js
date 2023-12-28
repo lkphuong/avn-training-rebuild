@@ -12,8 +12,8 @@ const findUserViewedByPost = async (
   let countVieweds = 0,
     userViewedFormateds = [];
   if (query) {
-    const limit = query.limit || DEFAULT_MAX_ITEM_PER_PAGE;
-    const page = query.page || 1;
+    const limit = query.get("limit") || DEFAULT_MAX_ITEM_PER_PAGE;
+    const page = query.get("page") || 1;
     const offset = (page - 1) * limit;
     let sortBy = query.sortBy || "-" + SORT_BY.CREATED_AT;
 
@@ -23,8 +23,8 @@ const findUserViewedByPost = async (
 
     const userVieweds = await postUserCollection
       .find({ postId: new ObjectId(postId) })
-      .skip(offset)
-      .limit(limit)
+      .skip(parseInt(offset))
+      .limit(parseInt(limit))
       .toArray();
 
     countVieweds = await postUserCollection.countDocuments({

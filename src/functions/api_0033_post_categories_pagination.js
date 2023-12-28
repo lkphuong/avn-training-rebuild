@@ -58,6 +58,10 @@ app.http("api_0033_post_categories_pagination", {
         searchObj.active = query.get("active") == "true" ? true : false;
       }
 
+      if (query.get("topicId")) {
+        searchObj.topicId = new ObjectId(query.get("topicId"));
+      }
+
       let sort = { sortOrder: -1 };
       if (query.get("sortType")) {
         sort =
@@ -69,8 +73,8 @@ app.http("api_0033_post_categories_pagination", {
       const categories = await collection
         .find(searchObj)
         .sort(sort)
-        .skip(offset)
-        .limit(limit)
+        .skip(parseInt(offset))
+        .limit(parseInt(limit))
         .toArray();
 
       if (categories?.length) {
@@ -126,6 +130,12 @@ app.http("api_0033_post_categories_pagination", {
           headers: HEADERS,
         });
       }
+
+      return (context.res = {
+        status: StatusCodes.NOT_FOUND,
+        body: success(null, "Không có dữ liệu hiển thị."),
+        headers: HEADERS,
+      });
     } catch (e) {
       console.log("err: ", e);
       return (context.res = {

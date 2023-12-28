@@ -56,7 +56,7 @@ app.http("api_0013_get_post_pagination", {
     };
 
     if (query.get("categoryId")) {
-      searchObj.categoryId = new ObjectId(query.categoryId);
+      searchObj.categoryId = new ObjectId(query.get("categoryId"));
     }
 
     if (query.get("active")) {
@@ -67,9 +67,11 @@ app.http("api_0013_get_post_pagination", {
     if (query.get("sortType")) {
       sort =
         query.get("sortType") == SORT_TYPE.ASC
-          ? { createdAt: 1 }
-          : { createdAt: -1 };
+          ? { createdAt: -1 }
+          : { createdAt: 1 };
     }
+
+    console.log("search: ", searchObj);
 
     const posts = await collection
       .find(searchObj)

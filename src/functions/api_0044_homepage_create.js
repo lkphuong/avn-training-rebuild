@@ -49,7 +49,12 @@ app.http("api_0044_homepage_create", {
 
       const _id = new ObjectId();
 
-      await collection.insertOne({ _id, ...data });
+      await collection.insertOne({
+        _id,
+        ...data,
+        deleted: false,
+        createdAt: new Date(),
+      });
 
       return (context.res = {
         status: StatusCodes.OK,

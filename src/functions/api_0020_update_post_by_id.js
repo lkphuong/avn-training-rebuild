@@ -94,6 +94,11 @@ app.http("api_0020_update_by_id", {
         );
       }
 
+      if (data._id) {
+        delete data._id;
+        delete data.createdAt;
+      }
+
       await collection.findOneAndUpdate(
         { _id: new ObjectId(id) },
         {

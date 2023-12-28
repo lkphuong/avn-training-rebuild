@@ -80,7 +80,10 @@ app.http("api_0027_topic_update_by_id", {
       data.slug = slug;
     }
 
-    if (data._id) delete data._id;
+    if (data._id) {
+      delete data._id;
+      delete data.createdAt;
+    }
 
     const result = await collection.findOneAndUpdate(
       { _id: new ObjectId(id) },
