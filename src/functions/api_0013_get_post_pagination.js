@@ -63,15 +63,17 @@ app.http("api_0013_get_post_pagination", {
       searchObj.active = query.get("active") == "true" ? true : false;
     }
 
+    if (query.get("topicId")) {
+      searchObj.topicId = new ObjectId(query.get("topicId"));
+    }
+
     let sort = { sortOrder: -1 };
     if (query.get("sortType")) {
       sort =
         query.get("sortType") == SORT_TYPE.ASC
-          ? { createdAt: -1 }
-          : { createdAt: 1 };
+          ? { createdAt: 1 }
+          : { createdAt: -1 };
     }
-
-    console.log("search: ", searchObj);
 
     const posts = await collection
       .find(searchObj)
@@ -93,31 +95,11 @@ app.http("api_0013_get_post_pagination", {
     }
 
     let postFormated = posts.map((post) => {
-      const {
-        _id,
-        title,
-        duration,
-        type,
-        createdAt,
-        active,
-        lang,
-        sortOrder,
-        description,
-      } = post;
-
       const banner = files.find((e) => e.id == post.banner);
       const category = categories.find((e) => e.id == post.categoryId);
 
       return {
-        _id,
-        title,
-        duration,
-        type,
-        active,
-        lang,
-        createdAt,
-        description,
-        sortOrder,
+        ...post,
         banner: banner
           ? {
               _id: banner._id,

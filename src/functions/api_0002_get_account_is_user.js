@@ -5,7 +5,6 @@ const { success, decodeJWT, authorization } = require("../../utils");
 
 const { ERROR_MESSAGE } = require("../../constant/error_message");
 
-const { SORT_BY } = require("../../constant/sort_by");
 const { SORT_TYPE } = require("../../constant/sort_type");
 const { DEFAULT_MAX_ITEM_PER_PAGE } = require("../../constant/setting");
 const { CONNECTION_STRING, COLLECTION, DB_NAME } = require("../../config");
@@ -86,8 +85,6 @@ app.http("api_0002_get_account_is_user", {
       .limit(parseInt(limit))
       .toArray();
 
-    console.log("seach obj: ", accounts);
-
     const userIds = accounts.map((e) => e.userId);
 
     const users = await userCollection
@@ -108,8 +105,9 @@ app.http("api_0002_get_account_is_user", {
         _id,
       } = account;
 
-      const user = users.find((e) => (e.id = account.userId));
-
+      const user = users.find(
+        (e) => e._id.toString() == account.userId.toString()
+      );
       return {
         _id,
         username,

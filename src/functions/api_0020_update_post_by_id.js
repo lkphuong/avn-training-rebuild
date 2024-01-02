@@ -1,9 +1,10 @@
 const { app } = require("@azure/functions");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 const { success, decodeJWT } = require("../../utils");
 const { CONNECTION_STRING, COLLECTION, DB_NAME } = require("../../config");
 const { HEADERS } = require("../../constant/header");
+const { SOURCE_LINK } = require("../../constant/exam_type");
 
 const client = new MongoClient(CONNECTION_STRING);
 
@@ -27,15 +28,15 @@ app.http("api_0020_update_by_id", {
         });
       }
 
-      const validationErrors = validateCreatePost(data);
+      // const validationErrors = validarecr(data);
 
-      if (validationErrors.length > 0) {
-        return (context.res = {
-          status: StatusCodes.BAD_REQUEST,
-          body: success(null, null, validationErrors),
-          headers: HEADERS,
-        });
-      }
+      // if (validationErrors.length > 0) {
+      //   return (context.res = {
+      //     status: StatusCodes.BAD_REQUEST,
+      //     body: success(null, null, validationErrors),
+      //     headers: HEADERS,
+      //   });
+      // }
 
       await client.connect();
       const database = client.db(DB_NAME);

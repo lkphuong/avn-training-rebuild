@@ -60,10 +60,8 @@ app.http("api_0004_add-account", {
     const groups = await groupCollection.find({}).toArray();
     const accountId = new ObjectId();
 
-    const createAccountParam = request.body;
-    if (!createAccountParam.isAdmin) {
-      const { dateOutOfWork, department, unit, section, position } =
-        createAccountParam;
+    if (!data.isAdmin) {
+      const { dateOutOfWork, department, unit, section, position } = data;
 
       const userParam = {
         dateOutOfWork,
@@ -84,7 +82,6 @@ app.http("api_0004_add-account", {
           createdAt: new Date(),
         }),
       ]);
-      console.log("user: ", user);
     } else {
       const groupAdmin = groups.find((g) => g.name == ACCOUNT_TYPE.ADMIN);
 

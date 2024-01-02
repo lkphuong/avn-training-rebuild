@@ -62,7 +62,7 @@ app.http("api_0007_update_account_by_id", {
 
     if (account.userId) {
       await userCollection.findOneAndUpdate(
-        { userId: new ObjectId(account.userId) },
+        { _id: account.userId },
         {
           $set: {
             department: data.department,
@@ -83,10 +83,9 @@ app.http("api_0007_update_account_by_id", {
     await collection.findOneAndUpdate(
       { _id: new ObjectId(id) },
       {
-        $set: { ...data, createdAt: new Date(data.createdAt) },
+        $set: { ...data },
       }
     );
-    console.log("check: ", { ...data });
     return (context.res = {
       status: StatusCodes.OK,
       body: success({ _id: id }, null),
