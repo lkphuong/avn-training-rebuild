@@ -97,6 +97,7 @@ app.http("api_0004_add-account", {
       _id: accountId,
       userId: user?.insertedId,
       ...data,
+      active: false,
       deleted: false,
       createdAt: new Date(),
     });
