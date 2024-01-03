@@ -11,6 +11,8 @@ const findUserViewedByPost = async (
 ) => {
   let countVieweds = 0,
     userViewedFormateds = [];
+  const searchObj = {};
+  console.log("query", query);
   if (query) {
     const limit = query.get("limit") || DEFAULT_MAX_ITEM_PER_PAGE;
     const page = query.get("page") || 1;
@@ -21,15 +23,19 @@ const findUserViewedByPost = async (
       sortBy = query.sortBy;
     }
 
+    if (query.get("done")) {
+      searchObj.done = query.get("done") === "true" ? true : false;
+    }
+    console.log("searchObj", { ...searchObj, postId: new ObjectId(postId) });
     const userVieweds = await postUserCollection
-      .find({ postId: new ObjectId(postId) })
+      .find({ ...searchObj, postId: new ObjectId(postId) })
       .skip(parseInt(offset))
       .limit(parseInt(limit))
       .toArray();
 
     countVieweds = await postUserCollection.countDocuments({
-      ...query,
-      postId: postId,
+      ...searchObj,
+      postId: new ObjectId(postId),
     });
 
     const accountIds = userVieweds.map((e) => e.accountId);
@@ -45,6 +51,7 @@ const findUserViewedByPost = async (
       );
       return {
         ...userViewed,
+        ...account,
         account: account,
       };
     });

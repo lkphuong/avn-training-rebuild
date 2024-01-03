@@ -68,6 +68,8 @@ app.http("api_0045_homepage_update", {
         {
           $set: {
             ...data,
+            bigBanner: new ObjectId(data.bigBanner),
+            smallBanner: new ObjectId(data.smallBanner),
           },
         }
       );

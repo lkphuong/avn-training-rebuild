@@ -93,6 +93,8 @@ app.http("api_0017_create_post", {
       slug: _slugify(data.title) + "-" + Date.now(),
       deleted: false,
       ...data,
+      active: data?.active || true,
+      categoryId: new ObjectId(data.categoryId),
       topicId: new ObjectId(data.topicId),
       createdAt: new Date(),
     });

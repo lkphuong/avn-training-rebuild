@@ -90,6 +90,7 @@ app.http("api_0027_topic_update_by_id", {
       {
         $set: {
           ...data,
+          topicId: new ObjectId(data.topicId),
         },
       }
     );

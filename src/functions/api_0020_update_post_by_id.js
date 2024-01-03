@@ -105,6 +105,9 @@ app.http("api_0020_update_by_id", {
         {
           $set: {
             ...data,
+            active: data?.active || true,
+            categoryId: new ObjectId(data.categoryId),
+            topicId: new ObjectId(data.topicId),
           },
         }
       );

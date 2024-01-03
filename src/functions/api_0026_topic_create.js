@@ -58,6 +58,7 @@ app.http("api_0026_topic_create", {
       deleted: false,
       slug: _slugify(data.name) + "-" + Date.now(),
       ...data,
+      topicId: new ObjectId(data.topicId),
       createdAt: new Date(),
     });
 

@@ -47,6 +47,8 @@ app.http("api_0051_create_post_user", {
       await collection.insertOne({
         _id,
         ...data,
+        accountId: new ObjectId(data.accountId),
+        postId: new ObjectId(data.postId),
         deleted: false,
         createdAt: new Date(),
       });

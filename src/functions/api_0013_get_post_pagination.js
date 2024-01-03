@@ -75,6 +75,8 @@ app.http("api_0013_get_post_pagination", {
           : { createdAt: -1 };
     }
 
+    console.log("searchObj", searchObj);
+
     const posts = await collection
       .find(searchObj)
       .sort(sort)

@@ -70,6 +70,9 @@ app.http("api_0038_post_categories_update_by_id", {
               "-" +
               Date.now(),
             ...data,
+            banner: new ObjectId(data.banner),
+            bigBanner: new ObjectId(data.bigBanner),
+            topicId: new ObjectId(data.topicId),
           },
         }
       );
