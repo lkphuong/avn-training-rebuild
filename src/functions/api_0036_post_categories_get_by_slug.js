@@ -37,9 +37,12 @@ app.http("api_0036_post_categories_get_by_slug", {
       const postCategory = await collection.findOne({ slug: slug });
 
       if (postCategory) {
-        const bigBanner = await fileCollection.findOne({
-          _id: new ObjectId(postCategory.bigBanner),
-        });
+        let bigBanner = null;
+        if (postCategory.bigBanner) {
+          bigBanner = await fileCollection.findOne({
+            _id: new ObjectId(postCategory.bigBanner),
+          });
+        }
 
         return (context.res = {
           status: StatusCodes.OK,

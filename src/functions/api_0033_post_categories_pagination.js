@@ -70,6 +70,8 @@ app.http("api_0033_post_categories_pagination", {
             : { createdAt: -1 };
       }
 
+      console.log("searchObj: ", searchObj);
+
       const categories = await collection
         .find(searchObj)
         .sort(sort)
