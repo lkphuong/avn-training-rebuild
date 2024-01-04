@@ -1,5 +1,5 @@
 const { app } = require("@azure/functions");
-const { MongoClient, ObjectId } = require("mongodb");
+const { MongoClient } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 
 const { success, decodeJWT, authorization } = require("../../utils");
@@ -10,10 +10,10 @@ const { ROLE } = require("../../constant/role");
 
 const client = new MongoClient(CONNECTION_STRING);
 
-app.http("api_0051_create_post_user", {
-  methods: ["POST"],
+app.http("api_0053_get_azure_config", {
+  methods: ["GET"],
   authLevel: "anonymous",
-  route: "post-users/create",
+  route: "azure-configs",
   handler: async (request, context) => {
     try {
       context.log(`Http function processed request for url "${request.url}"`);
@@ -28,7 +28,7 @@ app.http("api_0051_create_post_user", {
         });
       }
 
-      if (!authorization(decode, ROLE.ADMIN)) {
+      if (!authorization(decode, ROLE.IT)) {
         return (context.res = {
           status: StatusCodes.FORBIDDEN,
           body: success(null, "Không có quyền gọi request."),
@@ -36,32 +36,23 @@ app.http("api_0051_create_post_user", {
         });
       }
 
-      const data = await request.json();
-
       await client.connect();
       const database = client.db(DB_NAME);
-      const collection = database.collection(COLLECTION.POST_USER);
+      const collection = database.collection(COLLECTION.AZURE_CONFIG);
 
-      const _id = new ObjectId();
+      const result = await collection.find().toArray();
 
-      await collection.insertOne({
-        _id,
-        ...data,
-        active: data?.active || true,
-        accountId: new ObjectId(data.accountId),
-        postId: new ObjectId(data.postId),
-        deleted: false,
-        createdAt: new Date(),
-      });
+      if (result?.length) {
+        return (context.res = {
+          status: StatusCodes.OK,
+          body: success(result),
+          headers: HEADERS,
+        });
+      }
 
       return (context.res = {
-        status: StatusCodes.OK,
-        body: success(
-          {
-            _id,
-          },
-          null
-        ),
+        status: StatusCodes.NOT_FOUND,
+        body: success(null, "Không có dữ liệu."),
         headers: HEADERS,
       });
     } catch (e) {

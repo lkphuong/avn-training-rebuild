@@ -10,10 +10,10 @@ const { ROLE } = require("../../constant/role");
 
 const client = new MongoClient(CONNECTION_STRING);
 
-app.http("api_0051_create_post_user", {
-  methods: ["POST"],
+app.http("api_0054_update_azure_config", {
+  methods: ["PUT"],
   authLevel: "anonymous",
-  route: "post-users/create",
+  route: "azure-configs",
   handler: async (request, context) => {
     try {
       context.log(`Http function processed request for url "${request.url}"`);
@@ -28,7 +28,7 @@ app.http("api_0051_create_post_user", {
         });
       }
 
-      if (!authorization(decode, ROLE.ADMIN)) {
+      if (!authorization(decode, ROLE.IT)) {
         return (context.res = {
           status: StatusCodes.FORBIDDEN,
           body: success(null, "Không có quyền gọi request."),
@@ -36,32 +36,34 @@ app.http("api_0051_create_post_user", {
         });
       }
 
-      const data = await request.json();
-
       await client.connect();
       const database = client.db(DB_NAME);
-      const collection = database.collection(COLLECTION.POST_USER);
+      const collection = database.collection(COLLECTION.AZURE_CONFIG);
 
-      const _id = new ObjectId();
+      const data = await request.json();
 
-      await collection.insertOne({
-        _id,
-        ...data,
-        active: data?.active || true,
-        accountId: new ObjectId(data.accountId),
-        postId: new ObjectId(data.postId),
-        deleted: false,
-        createdAt: new Date(),
-      });
+      await Promise.all([
+        collection.findOneAndUpdate(
+          { key: "tenant_id" },
+          {
+            $set: {
+              value: data.tenant_id,
+            },
+          }
+        ),
+        collection.findOneAndUpdate(
+          { key: "client_secret" },
+          { $set: { value: data.client_secret } }
+        ),
+        collection.findOneAndUpdate(
+          { key: "client_id" },
+          { $set: { value: data.client_id } }
+        ),
+      ]);
 
       return (context.res = {
         status: StatusCodes.OK,
-        body: success(
-          {
-            _id,
-          },
-          null
-        ),
+        body: success("success", "Cập nhật thành công."),
         headers: HEADERS,
       });
     } catch (e) {
