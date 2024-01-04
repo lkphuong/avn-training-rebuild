@@ -43,13 +43,15 @@ app.http("api_0010_login_with_azure", {
     );
     const client_id = auzreConfigs.find((item) => item.key == "client_id");
 
+    console.log("data: ", tenant_id, client_secret, client_id);
+
     const { code } = data;
     const urlData = new URLSearchParams({
-      client_id: client_id ?? AZURE_CONFIG.AZURE_CLIENT_ID,
+      client_id: client_id.value ?? AZURE_CONFIG.AZURE_CLIENT_ID,
       scope: "user.read",
       redirect_uri: AZURE_CONFIG.AZURE_REDIRECT_URI,
       grant_type: "authorization_code",
-      client_secret: client_secret ?? AZURE_CONFIG.AZURE_CLIENT_SECRET,
+      client_secret: client_secret.value ?? AZURE_CONFIG.AZURE_CLIENT_SECRET,
       code: code,
     });
 
@@ -57,7 +59,7 @@ app.http("api_0010_login_with_azure", {
     const token = await axios
       .post(
         `https://login.microsoftonline.com/${
-          tenant_id ?? AZURE_CONFIG.AZURE_TENANT_ID
+          tenant_id.value ?? AZURE_CONFIG.AZURE_TENANT_ID
         }/oauth2/v2.0/token`,
         urlData
       )
