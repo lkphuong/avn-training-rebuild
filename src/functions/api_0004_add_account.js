@@ -60,6 +60,27 @@ app.http("api_0004_add-account", {
     const groups = await groupCollection.find({}).toArray();
     const accountId = new ObjectId();
 
+    //#region validation
+    const [us, email] = await Promise.all([
+      collection.findOne({ username: data.username }),
+      collection.findOne({ email: data.email }),
+    ]);
+    if (us) {
+      return (context.res = {
+        status: StatusCodes.BAD_REQUEST,
+        body: success(null, "Tài khoản đã tồn tại"),
+        headers: HEADERS,
+      });
+    }
+    if (email) {
+      return (context.res = {
+        status: StatusCodes.BAD_REQUEST,
+        body: success(null, "Email đã tồn tại"),
+        headers: HEADERS,
+      });
+    }
+    //#endregion
+
     if (!data.isAdmin) {
       const { dateOutOfWork, department, unit, section, position } = data;
 
@@ -83,7 +104,13 @@ app.http("api_0004_add-account", {
         }),
       ]);
     } else {
-      const groupAdmin = groups.find((g) => g.name == ACCOUNT_TYPE.ADMIN);
+      let groupAdmin;
+
+      if (data.isAdmin == 1) {
+        groupAdmin = groups.find((g) => g.name == ACCOUNT_TYPE.ADMIN);
+      } else {
+        groupAdmin = groups.find((g) => g.name == ACCOUNT_TYPE.IT);
+      }
 
       await userGroupCollection.insertOne({
         groupId: groupAdmin.id,
