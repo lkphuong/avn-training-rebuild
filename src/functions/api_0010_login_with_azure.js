@@ -27,20 +27,38 @@ app.http("api_0010_login_with_azure", {
 
     const data = await request.json();
 
+    // check info in database
+    await client.connect();
+    const database = client.db(DB_NAME);
+    const accountCollection = database.collection(COLLECTION.ACCOUNT);
+    const userCollection = database.collection(COLLECTION.USERS);
+    const userGroupCollection = database.collection(COLLECTION.USER_GROUP);
+    const groupCollection = database.collection(COLLECTION.GROUP);
+    const azureConfigCollection = database.collection(COLLECTION.AZURE_CONFIG);
+
+    const auzreConfigs = await azureConfigCollection.find().toArray();
+    const tenant_id = auzreConfigs.find((item) => item.key == "tenant_id");
+    const client_secret = auzreConfigs.find(
+      (item) => item.key == "client_secret"
+    );
+    const client_id = auzreConfigs.find((item) => item.key == "client_id");
+
     const { code } = data;
     const urlData = new URLSearchParams({
-      client_id: AZURE_CONFIG.AZURE_CLIENT_ID,
+      client_id: client_id ?? AZURE_CONFIG.AZURE_CLIENT_ID,
       scope: "user.read",
       redirect_uri: AZURE_CONFIG.AZURE_REDIRECT_URI,
       grant_type: "authorization_code",
-      client_secret: AZURE_CONFIG.AZURE_CLIENT_SECRET,
+      client_secret: client_secret ?? AZURE_CONFIG.AZURE_CLIENT_SECRET,
       code: code,
     });
 
     // generate token
     const token = await axios
       .post(
-        `https://login.microsoftonline.com/${AZURE_CONFIG.AZURE_TENANT_ID}/oauth2/v2.0/token`,
+        `https://login.microsoftonline.com/${
+          tenant_id ?? AZURE_CONFIG.AZURE_TENANT_ID
+        }/oauth2/v2.0/token`,
         urlData
       )
       .then((r) => {
@@ -83,14 +101,6 @@ app.http("api_0010_login_with_azure", {
         });
       });
 
-    // check info in database
-    await client.connect();
-    const database = client.db(DB_NAME);
-    const accountCollection = database.collection(COLLECTION.ACCOUNT);
-    const userCollection = database.collection(COLLECTION.USERS);
-    const userGroupCollection = database.collection(COLLECTION.USER_GROUP);
-    const groupCollection = database.collection(COLLECTION.GROUP);
-
     const account = await accountCollection.findOne({
       token_id: getProfile?.access_token?.id,
     });
@@ -110,8 +120,8 @@ app.http("api_0010_login_with_azure", {
           token_id: account?.token_id,
           name: account.name,
           avatar: account?.avatar ?? "",
-          lang: group?.name == "admin" ? ["vi", "en"] : ["vi"],
-          group: group?.name == "admin" ? "admin" : "user",
+          lang: group?.name == "admin" || "it" ? ["vi", "en"] : ["vi"],
+          group: group?.name ?? "user",
         },
         JWT_KEY,
         {
