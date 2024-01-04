@@ -74,7 +74,7 @@ app.http("api_0040_post_categories_delete_by_id", {
         { _id: new ObjectId(id) },
         {
           $set: {
-            deleted: false,
+            deleted: true,
           },
         }
       );
