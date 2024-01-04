@@ -60,7 +60,7 @@ app.http("api_0049_get_user_viewed_report", {
 
         const nextDateInThisWeek = moment()
           .startOf("week")
-          .add(i + 1, "day")
+          .add(i + 2, "day")
           .toDate();
 
         const dateInLastWeek = moment()
@@ -70,7 +70,7 @@ app.http("api_0049_get_user_viewed_report", {
 
         const nextDateInLastWeek = moment()
           .startOf("week")
-          .subtract(6 - i, "day")
+          .subtract(7 - i, "day")
           .toDate();
 
         thisWeekRequest.push(

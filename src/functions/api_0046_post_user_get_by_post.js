@@ -39,6 +39,7 @@ app.http("api_0046_post_user_get_by_post", {
       const database = client.db(DB_NAME);
       const collection = database.collection(COLLECTION.POST_USER);
       const accountCollection = database.collection(COLLECTION.ACCOUNT);
+      const userCollection = database.collection(COLLECTION.USERS);
 
       // if (query) {
       //   const limit = query.get("limit") || DEFAULT_MAX_ITEM_PER_PAGE;
@@ -111,7 +112,8 @@ app.http("api_0046_post_user_get_by_post", {
         postId,
         query,
         collection,
-        accountCollection
+        accountCollection,
+        userCollection
       );
 
       const userViewedDetails = [];
