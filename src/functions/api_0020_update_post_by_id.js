@@ -1,7 +1,7 @@
 const { app } = require("@azure/functions");
 const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
-const { success, decodeJWT } = require("../../utils");
+const { success, decodeJWT, _slugify } = require("../../utils");
 const { CONNECTION_STRING, COLLECTION, DB_NAME } = require("../../config");
 const { HEADERS } = require("../../constant/header");
 const { SOURCE_LINK } = require("../../constant/exam_type");
@@ -54,7 +54,9 @@ app.http("api_0020_update_by_id", {
 
       if (post.title !== data.title) {
         const slug =
-          slugify(data.title, { locale: "vi", lower: true }) + "-" + Date.now();
+          _slugify(data.title, { locale: "vi", lower: true }) +
+          "-" +
+          Date.now();
 
         const existPost = await collection.findOne({ slug });
         if (existPost) {
