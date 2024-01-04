@@ -52,6 +52,7 @@ app.http("api_0037_post_categories_create", {
         deleted: false,
         createdAt: new Date(),
         ...data,
+        active: data?.active || true,
         banner: new ObjectId(data.banner),
         bigBanner: new ObjectId(data.bigBanner),
         topicId: new ObjectId(data.topicId),

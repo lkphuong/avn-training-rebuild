@@ -52,6 +52,7 @@ app.http("api_0044_homepage_create", {
       await collection.insertOne({
         _id,
         ...data,
+        active: data?.active || true,
         bigBanner: new ObjectId(data.bigBanner),
         smallBanner: new ObjectId(data.smallBanner),
         deleted: false,
