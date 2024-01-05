@@ -37,9 +37,9 @@ const validateCreateAccount = (data) => {
     errors.push("Số điện thoại tối đa 15 kí tự");
   }
 
-  if (data.isAdmin && typeof data.isAdmin !== "boolean") {
-    errors.push("Loại tài khoản phải là boolean");
-  }
+  // if (data.isAdmin && typeof data.isAdmin !== "boolean") {
+  //   errors.push("Loại tài khoản phải là boolean");
+  // }
 
   if (data.dateOutOfWork && !(data.dateOutOfWork instanceof Date)) {
     errors.push("Ngày nghỉ phải là ngày");

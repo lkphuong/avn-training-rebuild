@@ -94,8 +94,9 @@ app.http("api_0017_create_post", {
       deleted: false,
       ...data,
       active: data?.active || true,
-      categoryId: new ObjectId(data.categoryId),
-      topicId: new ObjectId(data.topicId),
+      banner: new ObjectId(data?.banner) ?? null,
+      categoryId: new ObjectId(data?.categoryId) ?? null,
+      topicId: new ObjectId(data?.topicId) ?? null,
       createdAt: new Date(),
     });
 
