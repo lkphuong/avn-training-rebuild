@@ -17,11 +17,8 @@ const findUserViewedByPost = async (
     const limit = query.get("limit") || DEFAULT_MAX_ITEM_PER_PAGE;
     const page = query.get("page") || 1;
     const offset = (page - 1) * limit;
-    let sortBy = query.sortBy || "-" + SORT_BY.CREATED_AT;
 
-    if (query.sortType === SORT_TYPE.ASC) {
-      sortBy = query.sortBy;
-    }
+    const sort = query.get("sortType") === SORT_TYPE.ASC ? 1 : -1;
 
     if (query.get("done")) {
       searchObj.done = query.get("done") === "true" ? true : false;
@@ -29,6 +26,7 @@ const findUserViewedByPost = async (
 
     const userVieweds = await postUserCollection
       .find({ ...searchObj, postId: new ObjectId(postId) })
+      .sort({ createdAt: sort })
       .skip(parseInt(offset))
       .limit(parseInt(limit))
       .toArray();
@@ -56,16 +54,25 @@ const findUserViewedByPost = async (
       const account = accounts.find(
         (a) => a._id.toString() == userViewed.accountId.toString()
       );
+
       const user = users.find(
         (u) => u._id.toString() == account.userId.toString()
       );
+
+      if (account) {
+        delete account.createdAt;
+      }
+      if (user) {
+        delete account.createdAt;
+      }
+
       return {
         ...userViewed,
         ...account,
         ...user,
+        createdAt: userViewed.createdAt,
       };
     });
-
     return {
       data: userViewedFormateds,
       total: countVieweds,
@@ -104,6 +111,7 @@ const findUserViewedByPost = async (
         ...userViewed,
         ...account,
         ...user,
+        createdAt: userViewed.createdAt,
       };
     });
 
