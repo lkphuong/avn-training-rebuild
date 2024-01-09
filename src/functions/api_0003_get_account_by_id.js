@@ -48,7 +48,7 @@ app.http("api_0003_get_account_by_id", {
 
     if (account) {
       const userGroup = await userGroupCollection.findOne({
-        userId: new ObjectId(account._id),
+        userId: new ObjectId(account.userId),
       });
       console.log("userGroup: ", userGroup);
       let group = null;
@@ -59,9 +59,10 @@ app.http("api_0003_get_account_by_id", {
       }
       console.log("group: ", group);
       const response = {
-        id: account._id,
+        _id: account._id,
         username: account?.username,
         group: group?.name,
+        isAdmin: group?.name === "admin" ? 1 : group?.name === "it" ? 2 : 0,
         name: account?.name,
         lang: account?.lang,
       };
@@ -74,7 +75,7 @@ app.http("api_0003_get_account_by_id", {
     }
     return (context.res = {
       status: StatusCodes.NOT_FOUND,
-      body: success(data, ERROR_MESSAGE.GET_ACCOUNT_BY_ID_NOT_FOUND),
+      body: success(null, ERROR_MESSAGE.GET_ACCOUNT_BY_ID_NOT_FOUND),
       headers: HEADERS,
     });
   },

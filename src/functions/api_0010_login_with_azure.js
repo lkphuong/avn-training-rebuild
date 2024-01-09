@@ -122,7 +122,10 @@ app.http("api_0010_login_with_azure", {
           token_id: account?.token_id,
           name: account.name,
           avatar: account?.avatar ?? "",
-          lang: group?.name == "admin" || "it" ? ["vi", "en"] : ["vi"],
+          lang:
+            group?.name == "admin" || group?.name == "it"
+              ? ["vi", "en"]
+              : ["vi"],
           group: group?.name ?? "user",
         },
         JWT_KEY,

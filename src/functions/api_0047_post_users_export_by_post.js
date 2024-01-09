@@ -54,6 +54,7 @@ app.http("api_0047_post_users_export_by_post", {
       const postCollection = database.collection(COLLECTION.POST);
       const accountCollection = database.collection(COLLECTION.ACCOUNT);
       const postUserCollection = database.collection(COLLECTION.POST_USER);
+      const userCollection = database.collection(COLLECTION.USERS);
 
       const post = await postCollection.findOne({ _id: new ObjectId(postId) });
 
@@ -69,7 +70,8 @@ app.http("api_0047_post_users_export_by_post", {
         postId,
         query,
         postUserCollection,
-        accountCollection
+        accountCollection,
+        userCollection
       );
 
       const workbook = xlsx.utils.book_new();
@@ -129,11 +131,19 @@ app.http("api_0047_post_users_export_by_post", {
 
       const formatedData = userVieweds.data.map((userViewed, index) => {
         console.log("userViewed: ", userViewed);
-        const { username, name, birthday, gender, phoneNumber, email } =
-          userViewed.account;
-        const { department, dateOutOfWork, section, unit, position } =
-          userViewed.account.userId;
-
+        const {
+          username,
+          name,
+          birthday,
+          gender,
+          phoneNumber,
+          email,
+          department,
+          dateOutOfWork,
+          section,
+          unit,
+          position,
+        } = userViewed;
         return [
           index + 1,
           username,

@@ -9,6 +9,7 @@ const { validateUpdateAccount } = require("../../validations/update_account");
 const { CONNECTION_STRING, DB_NAME, COLLECTION } = require("../../config");
 const { ERROR_MESSAGE } = require("../../constant/error_message");
 const { HEADERS } = require("../../constant/header");
+const { ACCOUNT_TYPE } = require("../../constant/account_type");
 
 const client = new MongoClient(CONNECTION_STRING);
 
@@ -49,6 +50,8 @@ app.http("api_0007_update_account_by_id", {
     const database = client.db(DB_NAME);
     const collection = database.collection(COLLECTION.ACCOUNT);
     const userCollection = database.collection(COLLECTION.USERS);
+    const userGroupCollection = database.collection(COLLECTION.USER_GROUP);
+    const groupCollection = database.collection(COLLECTION.GROUP);
 
     const account = await collection.findOne({ _id: new ObjectId(id) });
 
@@ -86,6 +89,37 @@ app.http("api_0007_update_account_by_id", {
         $set: { ...data },
       }
     );
+
+    const groups = await groupCollection.find({}).toArray();
+    let groupAdmin;
+    if (data.isAdmin == 1) {
+      groupAdmin = groups.find((g) => g.name === ACCOUNT_TYPE.ADMIN);
+    } else if (data.isAdmin == 2) {
+      groupAdmin = groups.find((g) => g.name === ACCOUNT_TYPE.IT);
+    } else {
+      groupAdmin = groups.find((g) => g.name === ACCOUNT_TYPE.USER);
+    }
+
+    const userGroup = await userGroupCollection.findOne({
+      userId: account.userId,
+    });
+    if (userGroup) {
+      await userGroupCollection.findOneAndUpdate(
+        { userId: account.userId },
+        {
+          $set: {
+            groupId: groupAdmin._id,
+          },
+        }
+      );
+    } else {
+      await userGroupCollection.insertOne({
+        userId: account.userId,
+        groupId: groupAdmin._id,
+      });
+    }
+    //update user group
+
     return (context.res = {
       status: StatusCodes.OK,
       body: success({ _id: id }, null),

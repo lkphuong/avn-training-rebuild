@@ -52,7 +52,6 @@ app.http("api_0018_get_post_user_by_category", {
         categories = [];
       if (posts?.length) {
         const fileIds = posts.map((e) => new ObjectId(e.banner));
-        console.log("fileIds: ", fileIds);
         const postCategoryIds = posts.map((e) => e.categoryId);
         [files, categories] = await Promise.all([
           fileCollection.find({ _id: { $in: fileIds } }).toArray(),
@@ -73,9 +72,7 @@ app.http("api_0018_get_post_user_by_category", {
 
       const results = await Promise.all(requests);
 
-      console.log("file: ", files);
       const returnValues = posts.map((post, index) => {
-        console.log("post: ", post.banner);
         const file = files.find(
           (e) => e?._id?.toString() == post.banner?.toString()
         );
