@@ -85,7 +85,7 @@ app.http("api_0010_login_with_azure", {
     const getProfile = await axios
       .get(`https://graph.microsoft.com/v1.0/me`, {
         params: {
-          $select: `id,birthday,department,displayName,mobilePhone,mail,jobTitle,aboutMe,employeeId`,
+          $select: `id,birthday,department,displayName,mobilePhone,mail,jobTitle,aboutMe,employeeId, userPrincipalName`,
         },
         headers: {
           Authorization: `Bearer ${token.access_token}`,
@@ -104,7 +104,7 @@ app.http("api_0010_login_with_azure", {
       });
 
     const account = await accountCollection.findOne({
-      token_id: getProfile?.access_token?.id,
+      email: getProfile?.access_token?.userPrincipalName,
     });
 
     if (account) {
@@ -115,12 +115,36 @@ app.http("api_0010_login_with_azure", {
       const group = await groupCollection.findOne({
         _id: new ObjectId(userGroup.groupId),
       });
+
+      //#region update info
+      await Promise.all([
+        userCollection.findOneAndUpdate(
+          { _id: account.userId },
+          {
+            $set: {
+              department: getProfile?.access_token?.department ?? null,
+              position: getProfile?.access_token?.jobTitle ?? null,
+            },
+          }
+        ),
+        accountCollection.findOneAndUpdate(
+          { _id: account._id },
+          {
+            $set: {
+              name: getProfile?.access_token?.displayName ?? "",
+              birthday: getProfile?.access_token?.birthday,
+              phoneNumber: getProfile?.access_token?.mobilePhone ?? "",
+            },
+          }
+        ),
+      ]);
+      //#endregion
       const accessToken = jwt.sign(
         {
           _id: account._id,
           username: account.username,
           token_id: account?.token_id,
-          name: account.name,
+          name: getProfile?.access_token?.displayName,
           avatar: account?.avatar ?? "",
           lang:
             group?.name == "admin" || group?.name == "it"
@@ -160,11 +184,12 @@ app.http("api_0010_login_with_azure", {
           token_id: getProfile?.access_token?.id ?? "",
           name: getProfile?.access_token?.displayName ?? "",
           birthday: getProfile?.access_token?.birthday,
-          email: getProfile?.access_token?.mail ?? "",
+          email: getProfile?.access_token?.userPrincipalName, // mail
           phoneNumber: getProfile?.access_token?.mobilePhone ?? "",
           userId: newUserID,
           deleted: false,
           createdAt: new Date(),
+          access_token: getProfile.access_token,
         }),
         userGroupCollection.insertOne({
           _id: new ObjectId(),
