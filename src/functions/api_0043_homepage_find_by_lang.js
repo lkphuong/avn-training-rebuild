@@ -28,9 +28,8 @@ app.http("api_0043_homepage_find_by_lang", {
 
       if (homepage?.slides?.length) {
         const fileIds = homepage.slides.map((slide) => ({ _id: slide?.file }));
-
         const files = await fileCollection
-          .find({ _id: { $in: fileIds } })
+          .find({ _id: { $in: fileIds.map((e) => e._id) } })
           .toArray();
 
         homepage.slides = homepage.slides.map((slide) => {
@@ -50,11 +49,18 @@ app.http("api_0043_homepage_find_by_lang", {
         });
       }
 
+      const [smallBanner, bigBanner] = await Promise.all([
+        fileCollection.findOne({ _id: homepage.smallBanner }),
+        fileCollection.findOne({ _id: homepage.bigBanner }),
+      ]);
+
       return (context.res = {
         status: StatusCodes.OK,
         body: success(
           {
             ...homepage,
+            bigBanner: bigBanner ?? null,
+            smallBanner: smallBanner ?? null,
           },
           null
         ),

@@ -95,7 +95,6 @@ app.http("api_0033_post_categories_pagination", {
         ]);
 
         const categoryFormateds = categories.map((category) => {
-          console.log(category.banner);
           const banner =
             banners.find(
               (e) => e._id.toString() == category.banner?.toString()

@@ -172,7 +172,7 @@ app.http("api_0010_login_with_azure", {
           _id: newUserID,
           department: getProfile?.access_token?.department ?? null,
           unit: "",
-          section: "",
+          section: getProfile?.access_token?.section ?? null,
           position: getProfile?.access_token?.jobTitle ?? null,
           lang: "vi",
           deleted: false,

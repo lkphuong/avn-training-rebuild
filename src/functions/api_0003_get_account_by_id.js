@@ -43,28 +43,36 @@ app.http("api_0003_get_account_by_id", {
     const collection = database.collection(COLLECTION.ACCOUNT);
     const userGroupCollection = database.collection(COLLECTION.USER_GROUP);
     const groupCollection = database.collection(COLLECTION.GROUP);
+    const userCollection = database.collection(COLLECTION.USERS);
 
     const account = await collection.findOne({ _id: new ObjectId(id) });
 
     if (account) {
-      const userGroup = await userGroupCollection.findOne({
-        userId: new ObjectId(account.userId),
-      });
-      console.log("userGroup: ", userGroup);
+      const [userGroup, user] = await Promise.all([
+        userGroupCollection.findOne({
+          userId: new ObjectId(account.userId),
+        }),
+        userCollection.findOne({
+          _id: new ObjectId(account.userId),
+        }),
+      ]);
+
       let group = null;
       if (userGroup) {
         group = await groupCollection.findOne({
           _id: new ObjectId(userGroup.groupId),
         });
       }
-      console.log("group: ", group);
+      console.log("account: ", account);
       const response = {
         _id: account._id,
         username: account?.username,
         group: group?.name,
+        unit: user?.unit,
+        gender: account.gender ?? true,
         isAdmin: group?.name === "admin" ? 1 : group?.name === "it" ? 2 : 0,
         name: account?.name,
-        lang: account?.lang,
+        lang: account?.lang ? account?.lang : "vi",
       };
 
       return (context.res = {

@@ -58,8 +58,6 @@ app.http("api_0021_delete_post", {
         }
       );
 
-      console.log("result: ", result);
-
       return (context.res = {
         status: StatusCodes.OK,
         body: success({ _id: id }, null),

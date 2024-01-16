@@ -1,5 +1,5 @@
 const { app } = require("@azure/functions");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const { StatusCodes } = require("http-status-codes");
 
 const { success, decodeJWT } = require("../../utils");
@@ -73,13 +73,13 @@ app.http("api_0023_topic_get_pagination", {
         .toArray();
 
       if (topics?.length > 0) {
-        const fileIds = topics.map((e) => e.banner);
+        const fileIds = topics.map((e) => new ObjectId(e.banner));
         const files = await fileCollection
           .find({ _id: { $in: fileIds } })
           .toArray();
 
         const topicFormated = topics.map((topic) => {
-          const banner = files.find((file) => (file._id = topic.banner));
+          const banner = files.find((file) => file._id == topic.banner);
           return {
             ...topic,
             banner,

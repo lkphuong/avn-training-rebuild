@@ -1,12 +1,16 @@
 const { app } = require("@azure/functions");
 const { StatusCodes } = require("http-status-codes");
-
+const { MongoClient } = require("mongodb");
 const { success } = require("../../utils");
+
+const { CONNECTION_STRING, COLLECTION, DB_NAME } = require("../../config");
 
 const { validateRedirectUri } = require("../../validations/auzre_redirect_uri");
 
 const { HEADERS } = require("../../constant/header");
 const { AZURE_CONFIG } = require("../../config");
+
+const client = new MongoClient(CONNECTION_STRING);
 
 app.http("api_0011_redirect_azure", {
   methods: ["POST"],
@@ -26,10 +30,20 @@ app.http("api_0011_redirect_azure", {
       });
     }
 
+    await client.connect();
+    const database = client.db(DB_NAME);
+    const azureConfigCollection = database.collection(COLLECTION.AZURE_CONFIG);
+
+    const auzreConfigs = await azureConfigCollection.find().toArray();
+    const tenant_id = auzreConfigs.find((item) => item.key == "tenant_id");
+    const client_id = auzreConfigs.find((item) => item.key == "client_id");
+
+    console.log("data: ", auzreConfigs);
+
     const url = `https://login.microsoftonline.com/${
-      AZURE_CONFIG.AZURE_TENANT_ID
+      tenant_id?.value ?? AZURE_CONFIG.AZURE_TENANT_ID
     }/oauth2/v2.0/authorize?client_id=${
-      AZURE_CONFIG.AZURE_CLIENT_ID
+      client_id?.value ?? AZURE_CONFIG.AZURE_CLIENT_ID
     }&response_type=code&redirect_uri=${
       redirectUri ?? AZURE_CONFIG.AZURE_REDIRECT_URI
     }&response_mode=query&scope=openid%20offline_access%20https%3A%2F%2Fgraph.microsoft.com%2Fuser.read`;

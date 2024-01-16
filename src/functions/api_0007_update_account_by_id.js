@@ -33,18 +33,18 @@ app.http("api_0007_update_account_by_id", {
     const id = request.params.id;
     const data = await request.json();
 
-    const validationErrors = validateUpdateAccount(data);
-    if (validationErrors.length > 0) {
-      return (context.res = {
-        status: StatusCodes.BAD_REQUEST,
-        body: success(
-          null,
-          validationErrors[0],
-          JSON.stringify(validationErrors)
-        ),
-        headers: HEADERS,
-      });
-    }
+    // const validationErrors = validateUpdateAccount(data);
+    // if (validationErrors.length > 0) {
+    //   return (context.res = {
+    //     status: StatusCodes.BAD_REQUEST,
+    //     body: success(
+    //       null,
+    //       validationErrors[0],
+    //       JSON.stringify(validationErrors)
+    //     ),
+    //     headers: HEADERS,
+    //   });
+    // }
 
     await client.connect();
     const database = client.db(DB_NAME);
@@ -68,11 +68,8 @@ app.http("api_0007_update_account_by_id", {
         { _id: account.userId },
         {
           $set: {
-            department: data.department,
-            dateOutOfWork: data.dateOutOfWork,
             unit: data.unit,
-            section: data.section,
-            position: data.position,
+            lang: data.lang,
           },
         }
       );
@@ -86,7 +83,7 @@ app.http("api_0007_update_account_by_id", {
     await collection.findOneAndUpdate(
       { _id: new ObjectId(id) },
       {
-        $set: { ...data },
+        $set: { gender: data.gender, lang: data.lang },
       }
     );
 

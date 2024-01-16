@@ -130,7 +130,6 @@ app.http("api_0047_post_users_export_by_post", {
       ];
 
       const formatedData = userVieweds.data.map((userViewed, index) => {
-        console.log("userViewed: ", userViewed);
         const {
           username,
           name,

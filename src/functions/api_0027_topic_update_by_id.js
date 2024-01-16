@@ -95,8 +95,6 @@ app.http("api_0027_topic_update_by_id", {
       }
     );
 
-    console.log("result: ", result);
-
     return (context.res = {
       status: StatusCodes.OK,
       body: success({ _id: id }, null),
