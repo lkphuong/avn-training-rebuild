@@ -79,7 +79,9 @@ app.http("api_0023_topic_get_pagination", {
           .toArray();
 
         const topicFormated = topics.map((topic) => {
-          const banner = files.find((file) => file._id == topic.banner);
+          const banner = files.find(
+            (file) => file?._id?.toString() == topic?.banner?.toString()
+          );
           return {
             ...topic,
             banner,

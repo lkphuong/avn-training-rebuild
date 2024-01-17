@@ -12,7 +12,7 @@ const client = new MongoClient(CONNECTION_STRING);
 app.http("api_0048_post_user_update_done_status", {
   methods: ["PUT"],
   authLevel: "anonymous",
-  route: "post-users/updateDoneStatus/:postId",
+  route: "post-users/updateDoneStatus/{postId}",
   handler: async (request, context) => {
     try {
       context.log(`Http function processed request for url "${request.url}"`);

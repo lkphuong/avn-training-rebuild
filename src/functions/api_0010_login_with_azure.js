@@ -103,9 +103,15 @@ app.http("api_0010_login_with_azure", {
         });
       });
 
-    const account = await accountCollection.findOne({
-      email: getProfile?.access_token?.userPrincipalName,
+    let account = await accountCollection.findOne({
+      username: getProfile?.access_token?.employeeId,
     });
+
+    if (!account) {
+      account = await accountCollection.findOne({
+        email: getProfile?.access_token?.userPrincipalName,
+      });
+    }
 
     if (account) {
       const userGroup = await userGroupCollection.findOne({
