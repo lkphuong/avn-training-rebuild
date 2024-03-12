@@ -32,6 +32,7 @@ const decodeJWT = async (data) => {
       username: decode.username,
       name: decode.name,
       avatar: decode.avatar,
+      user_id: decode.userId,
       group: decode?.group ?? "user",
       lang: decode?.lang ?? ["vi"],
     };

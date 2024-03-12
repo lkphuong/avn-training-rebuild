@@ -45,7 +45,8 @@ app.http("api_0011_redirect_azure", {
     }/oauth2/v2.0/authorize?client_id=${
       client_id?.value ?? AZURE_CONFIG.AZURE_CLIENT_ID
     }&response_type=code&redirect_uri=${
-      redirectUri ?? AZURE_CONFIG.AZURE_REDIRECT_URI
+      "https://training.ajinomoto.com.vn/azureLogin" ?? // web lười qué phải đổi ở api :))
+      AZURE_CONFIG.AZURE_REDIRECT_URI
     }&response_mode=query&scope=openid%20offline_access%20https%3A%2F%2Fgraph.microsoft.com%2Fuser.read`;
 
     return (context.res = {

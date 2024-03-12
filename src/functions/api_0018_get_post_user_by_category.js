@@ -62,8 +62,8 @@ app.http("api_0018_get_post_user_by_category", {
       const requests = [];
       posts.forEach((post) => {
         const request = postUserCollection.findOne({
-          accountId: decode?.username ?? null,
-          postId: post._id,
+          accountId: new ObjectId(decode._id),
+          postId: new ObjectId(post._id),
           done: true,
         });
 

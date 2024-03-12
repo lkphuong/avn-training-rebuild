@@ -190,12 +190,7 @@ app.http("api_0049_get_user_viewed_report", {
 
       return (context.res = {
         status: StatusCodes.OK,
-        body: success(
-          {
-            data: dataReturn,
-          },
-          null
-        ),
+        body: success(dataReturn, null),
         headers: HEADERS,
       });
     } catch (e) {

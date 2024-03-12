@@ -52,11 +52,11 @@ const findUserViewedByPost = async (
 
     userViewedFormateds = userVieweds.map((userViewed) => {
       const account = accounts.find(
-        (a) => a._id.toString() == userViewed.accountId.toString()
+        (a) => a._id.toString() == userViewed?.accountId.toString()
       );
 
       const user = users.find(
-        (u) => u._id.toString() == account.userId.toString()
+        (u) => u._id.toString() == account?.userId.toString()
       );
 
       if (account) {
@@ -102,10 +102,10 @@ const findUserViewedByPost = async (
 
     userViewedFormateds = userVieweds.map((userViewed) => {
       const account = accounts.find(
-        (a) => a._id.toString() == userViewed.accountId.toString()
+        (a) => a._id.toString() == userViewed?.accountId?.toString()
       );
       const user = users.find(
-        (u) => u._id.toString() == account.userId.toString()
+        (u) => u._id.toString() == account?.userId?.toString()
       );
       return {
         ...userViewed,

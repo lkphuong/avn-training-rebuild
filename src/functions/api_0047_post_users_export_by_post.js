@@ -158,10 +158,14 @@ app.http("api_0047_post_users_export_by_post", {
           position,
           userViewed?.done ? "Đã xem hết" : "Chưa xem hết",
           userViewed?.createdAt
-            ? moment(userViewed?.createdAt).format("DD/MM/YYYY HH:mm")
+            ? moment(userViewed?.createdAt)
+                .utcOffset("+07:00")
+                .format("DD/MM/YYYY HH:mm")
             : "",
           userViewed?.doneAt
-            ? moment(userViewed?.doneAt).format("DD/MM/YYYY HH:mm")
+            ? moment(userViewed?.doneAt)
+                .utcOffset("+07:00")
+                .format("DD/MM/YYYY HH:mm")
             : "",
         ];
       });

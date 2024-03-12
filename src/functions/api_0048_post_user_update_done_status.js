@@ -34,16 +34,18 @@ app.http("api_0048_post_user_update_done_status", {
       const collection = database.collection(COLLECTION.POST_USER);
 
       const postView = await collection.findOne({
-        accountId: decode._id,
-        postId: postId,
+        accountId: new ObjectId(decode._id),
+        postId: new ObjectId(postId),
       });
+
+      console.log("postView: ", postView);
 
       if (!postView) {
         const _id = new ObjectId();
         await collection.insertOne({
           _id: _id,
-          accountId: decode._id,
-          postId: postId,
+          accountId: new ObjectId(decode._id),
+          postId: new ObjectId(postId),
           done: data?.done ?? false,
           duration: data?.duration ?? 0,
           deleted: false,
@@ -62,21 +64,23 @@ app.http("api_0048_post_user_update_done_status", {
         });
       } else {
         if (data?.done) {
-          postView.done = done;
+          postView.done = data.done;
           postView.doneAt = new Date(Date.now());
         }
 
         if (data.duration) {
-          postView.duration = duration;
+          postView.duration = data.duration;
         }
-
+        const _id = postView._id;
         if (postView._id) {
           delete postView._id;
           delete postView.createdAt;
         }
 
+        console.log("postView 2: ", postView);
+
         await collection.findOneAndUpdate(
-          { accountId: decode._id, postId },
+          { accountId: new ObjectId(decode._id), postId: new ObjectId(postId) },
           { $set: { ...postView } }
         );
 
@@ -84,7 +88,7 @@ app.http("api_0048_post_user_update_done_status", {
           status: StatusCodes.OK,
           body: success(
             {
-              _id: postView._id,
+              _id,
             },
             null
           ),

@@ -66,7 +66,7 @@ app.http("api_0015_get_post_by_slug", {
         let userViewed = null;
         if (post.type === POST_TYPE.VIDEO) {
           userViewed = await postUserCollection.findOne({
-            accountId: 1,
+            accountId: new ObjectId(decode?._id),
             postId: post._id,
           });
         }
