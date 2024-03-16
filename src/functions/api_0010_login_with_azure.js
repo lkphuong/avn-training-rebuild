@@ -72,7 +72,7 @@ app.http("api_0010_login_with_azure", {
         .catch(() => {
           return (context.res = {
             status: StatusCodes.BAD_REQUEST,
-            body: success(null, "invalid_grant"),
+            body: success(null, "invalid_grant 1"),
             headers: HEADERS,
           });
         });
@@ -88,7 +88,7 @@ app.http("api_0010_login_with_azure", {
       const getProfile = await axios
         .get(`https://graph.microsoft.com/v1.0/me`, {
           params: {
-            $select: `id,birthday,department,displayName,mobilePhone,mail,jobTitle,aboutMe,employeeId, userPrincipalName`,
+            $select: `id,birthday,department,displayName,mobilePhone,mail,jobTitle,aboutMe,employeeId, userPrincipalName, gender`,
           },
           headers: {
             Authorization: `Bearer ${token.access_token}`,
@@ -117,6 +117,17 @@ app.http("api_0010_login_with_azure", {
       }
 
       if (account) {
+        if (!account.active) {
+          return (context.res = {
+            status: StatusCodes.NOT_FOUND,
+            body: success(
+              null,
+              "Người dùng không tồn tại" + account._id + account.active
+            ),
+            headers: HEADERS,
+          });
+        }
+
         const [userGroup, user] = await Promise.all([
           userGroupCollection.findOne({
             userId: account?.userId,
@@ -149,6 +160,7 @@ app.http("api_0010_login_with_azure", {
                 name: getProfile?.access_token?.displayName ?? "",
                 birthday: getProfile?.access_token?.birthday,
                 phoneNumber: getProfile?.access_token?.mobilePhone ?? "",
+                gender: getProfile?.access_token?.gender ?? false,
               },
             }
           ),
@@ -170,7 +182,7 @@ app.http("api_0010_login_with_azure", {
           },
           JWT_KEY,
           {
-            expiresIn: 60 * 60 * 24 * 7,
+            expiresIn: "30d",
           }
         );
 
@@ -200,8 +212,12 @@ app.http("api_0010_login_with_azure", {
             token_id: getProfile?.access_token?.id ?? "",
             name: getProfile?.access_token?.displayName ?? "",
             birthday: getProfile?.access_token?.birthday,
-            email: getProfile?.access_token?.mail, // mail
+            email:
+              getProfile?.access_token?.mail ??
+              getProfile.access_token?.userPrincipalName, // mail
             phoneNumber: getProfile?.access_token?.mobilePhone ?? "",
+            gender: getProfile?.access_token?.gender,
+            active: true,
             userId: newUserID,
             deleted: false,
             createdAt: new Date(),
@@ -230,7 +246,7 @@ app.http("api_0010_login_with_azure", {
           },
           JWT_KEY,
           {
-            expiresIn: 60 * 60 * 24 * 7,
+            expiresIn: "30d",
           }
         );
 

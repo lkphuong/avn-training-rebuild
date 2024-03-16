@@ -145,7 +145,7 @@ app.http("api_0002_get_account_is_user", {
       });
     }
     return (context.res = {
-      status: StatusCodes.OK,
+      status: StatusCodes.NOT_FOUND,
       body: success(null, ERROR_MESSAGE.NOT_FOUND),
       headers: HEADERS,
     });
