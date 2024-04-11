@@ -21,15 +21,15 @@ app.http("api_0046_post_user_get_by_post", {
     try {
       context.log(`Http function processed request for url "${request.url}"`);
 
-      const token = request.headers.get("authorization");
-      const decode = await decodeJWT(token);
-      if (!decode) {
-        return (context.res = {
-          status: StatusCodes.UNAUTHORIZED,
-          body: success(null, "Vui lòng đăng nhập trước khi gọi request."),
-          headers: HEADERS,
-        });
-      }
+      // const token = request.headers.get("authorization");
+      // const decode = await decodeJWT(token);
+      // if (!decode) {
+      //   return (context.res = {
+      //     status: StatusCodes.UNAUTHORIZED,
+      //     body: success(null, "Vui lòng đăng nhập trước khi gọi request."),
+      //     headers: HEADERS,
+      //   });
+      // }
 
       const postId = request.params.postId;
 
@@ -116,9 +116,57 @@ app.http("api_0046_post_user_get_by_post", {
         userCollection
       );
 
+      const newUserVieweds = [],
+        lengthUserViewds = userViewedFormateds?.data?.length ?? 0;
+
+      for (let i = 0; i < lengthUserViewds; i++) {
+        const userViewed = userViewedFormateds.data[i];
+
+        const check = newUserVieweds.find(
+          (e) => e.username === userViewed.username
+        );
+
+        if (!check) {
+          const tmpUserVieweds = userViewedFormateds.data.filter(
+            (e) => e.username === userViewed.username
+          );
+          if (tmpUserVieweds.length === 1) {
+            if (tmpUserVieweds[0].doneAt) {
+              tmpUserVieweds[0].done = true;
+            }
+            if (!tmpUserVieweds[0].doneAt && tmpUserVieweds[0].done) {
+              tmpUserVieweds[0].doneAt = tmpUserVieweds[0].doneAt = new Date(
+                new Date(tmpUserVieweds[0].createdAt).setSeconds(
+                  tmpUserVieweds[0].duration
+                )
+              );
+            }
+            newUserVieweds.push(tmpUserVieweds[0]);
+          } else {
+            let tmpUserViewed = tmpUserVieweds[0];
+            for (let j = 0; j < tmpUserVieweds.length; j++) {
+              if (tmpUserVieweds[j].done || tmpUserVieweds[j].doneAt) {
+                if (!tmpUserVieweds[j].doneAt && tmpUserVieweds[j].done) {
+                  tmpUserVieweds[j].doneAt = new Date(
+                    new Date(tmpUserVieweds[j].createdAt).setSeconds(
+                      tmpUserVieweds[j].duration
+                    )
+                  );
+                }
+                tmpUserVieweds[j].done = true;
+                tmpUserViewed = tmpUserVieweds[j];
+                break;
+              }
+            }
+
+            newUserVieweds.push(tmpUserViewed);
+          }
+        }
+      }
+
       const userViewedDetails = [];
 
-      userViewedFormateds.data.forEach((userViewed) => {
+      newUserVieweds.forEach((userViewed) => {
         userViewedDetails.push({
           done: userViewed?.done ?? false,
           duration: userViewed?.duration ?? "",

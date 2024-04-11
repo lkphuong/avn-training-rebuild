@@ -129,7 +129,73 @@ app.http("api_0047_post_users_export_by_post", {
         "Ngày xem hết",
       ];
 
-      const formatedData = userVieweds.data.map((userViewed, index) => {
+      // remove duplicate rows
+      const newUserVieweds = [],
+        lengthUserViewds = userVieweds.data.length;
+
+      for (let i = 0; i < lengthUserViewds; i++) {
+        const userViewed = userVieweds.data[i];
+
+        const check = newUserVieweds.find(
+          (e) => e.username === userViewed.username
+        );
+
+        if (!check) {
+          const tmpUserVieweds = userVieweds.data.filter(
+            (e) => e.username === userViewed.username
+          );
+          if (tmpUserVieweds.length === 1) {
+            if (tmpUserVieweds[0].doneAt) {
+              tmpUserVieweds[0].done = true;
+            }
+
+            if (!tmpUserVieweds[0].doneAt && tmpUserVieweds[0].done) {
+              tmpUserVieweds[0].doneAt = tmpUserVieweds[0].doneAt = new Date(
+                new Date(tmpUserVieweds[0].createdAt).setSeconds(
+                  tmpUserVieweds[0].duration
+                )
+              );
+            }
+
+            newUserVieweds.push(tmpUserVieweds[0]);
+          } else {
+            let tmpUserViewed = tmpUserVieweds[0];
+            for (let j = 0; j < tmpUserVieweds.length; j++) {
+              if (tmpUserVieweds[j].done || tmpUserVieweds[j].doneAt) {
+                tmpUserVieweds[j].done = true;
+
+                if (!tmpUserVieweds[j].doneAt && tmpUserVieweds[j].done) {
+                  tmpUserVieweds[j].doneAt = tmpUserVieweds[j].doneAt =
+                    new Date(
+                      new Date(tmpUserVieweds[j].createdAt).setSeconds(
+                        tmpUserVieweds[j].duration
+                      )
+                    );
+                }
+
+                tmpUserViewed = tmpUserVieweds[j];
+                break;
+              }
+            }
+
+            newUserVieweds.push(tmpUserViewed);
+          }
+        }
+        // return array user vieweds
+        // const index = newUserVieweds.findIndex(
+        //   (item) => item.username === userViewed.username
+        // );
+        // if (index === -1) {
+        //   newUserVieweds.push(userViewed);
+        // } else {
+        //   if (userViewed.done) {
+        //     newUserVieweds[index].done = true;
+        //     newUserVieweds[index].doneAt = userViewed.doneAt;
+        //   }
+        // }
+      }
+
+      const formatedData = newUserVieweds.map((userViewed, index) => {
         const {
           username,
           name,
