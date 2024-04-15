@@ -122,14 +122,13 @@ app.http("api_0046_post_user_get_by_post", {
       for (let i = 0; i < lengthUserViewds; i++) {
         const userViewed = userViewedFormateds.data[i];
 
-        const check = newUserVieweds.find(
-          (e) => e.username === userViewed.username
-        );
+        const check = newUserVieweds.find((e) => e.email === userViewed.email);
 
         if (!check) {
           const tmpUserVieweds = userViewedFormateds.data.filter(
-            (e) => e.username === userViewed.username
+            (e) => e.email === userViewed.email
           );
+
           if (tmpUserVieweds.length === 1) {
             if (tmpUserVieweds[0].doneAt) {
               tmpUserVieweds[0].done = true;

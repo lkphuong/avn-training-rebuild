@@ -136,13 +136,11 @@ app.http("api_0047_post_users_export_by_post", {
       for (let i = 0; i < lengthUserViewds; i++) {
         const userViewed = userVieweds.data[i];
 
-        const check = newUserVieweds.find(
-          (e) => e.username === userViewed.username
-        );
+        const check = newUserVieweds.find((e) => e.email === userViewed.email);
 
         if (!check) {
           const tmpUserVieweds = userVieweds.data.filter(
-            (e) => e.username === userViewed.username
+            (e) => e.email === userViewed.email
           );
           if (tmpUserVieweds.length === 1) {
             if (tmpUserVieweds[0].doneAt) {
