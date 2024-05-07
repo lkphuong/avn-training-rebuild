@@ -156,7 +156,11 @@ app.http("api_0010_login_with_azure", {
             { _id: account._id },
             {
               $set: {
-                email: getProfile?.access_token?.mail ?? account?.email ?? "",
+                username: getProfile?.access_token?.employeeId ?? "",
+                email:
+                  getProfile?.access_token?.mail ??
+                  getProfile?.access_token?.userPrincipalName ??
+                  "",
                 name: getProfile?.access_token?.displayName ?? "",
                 birthday: getProfile?.access_token?.birthday,
                 phoneNumber: getProfile?.access_token?.mobilePhone ?? "",
